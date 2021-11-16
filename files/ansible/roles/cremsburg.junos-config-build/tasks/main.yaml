@@ -1,0 +1,26 @@
+---
+# tasks file for cremsburg.junos-config-build
+- import_tasks: manage_directories.yaml
+- import_tasks: build_snippet_version.yaml
+- import_tasks: build_snippet_apply_groups.yaml
+- import_tasks: build_snippet_groups.yaml
+- import_tasks: build_snippet_system.yaml
+- import_tasks: build_snippet_event_options.yaml
+- import_tasks: build_snippet_chassis.yaml
+- import_tasks: build_snippet_services.yaml
+- import_tasks: build_snippet_security.yaml
+- import_tasks: build_snippet_interfaces.yaml
+- import_tasks: build_snippet_snmp.yaml
+- import_tasks: build_snippet_forwarding_options.yaml
+- import_tasks: build_snippet_routing_instances.yaml
+- import_tasks: build_snippet_routing_options.yaml
+- import_tasks: build_snippet_protocols.yaml
+- import_tasks: build_snippet_policy_options.yaml
+- import_tasks: build_snippet_class_of_service.yaml
+- import_tasks: build_snippet_firewall.yaml
+- import_tasks: build_snippet_switch_options.yaml
+- import_tasks: build_snippet_poe.yaml
+- import_tasks: build_snippet_virtual_chassis.yaml
+- import_tasks: build_snippet_access.yaml
+- import_tasks: build_snippet_vlans.yaml
+- import_tasks: assemble_full_config.yaml

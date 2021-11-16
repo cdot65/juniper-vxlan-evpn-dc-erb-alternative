@@ -1,0 +1,14 @@
+# configuration_groups:
+#   - name: AE_MTU_JUMBO
+#     interfaces:
+#       interface:
+#         mtu: "9192"
+#         name: <*>
+#   - name: AE_LACP_BOND
+#     interfaces:
+#       interface:
+#         aggregated_ether_options:
+#           lacp:
+#             active: null
+#             periodic: slow
+#         name: <*>

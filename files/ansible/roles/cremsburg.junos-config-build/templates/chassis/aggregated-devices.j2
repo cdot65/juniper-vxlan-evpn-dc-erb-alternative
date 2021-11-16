@@ -1,0 +1,18 @@
+    {% if configuration_chassis.aggregated_devices is defined %}
+    aggregated-devices {
+        {% if configuration_chassis.aggregated_devices.ethernet is defined %}
+        ethernet {
+            {% if configuration_chassis.aggregated_devices.ethernet.device_count is defined %}
+            device-count {{ configuration_chassis.aggregated_devices.ethernet.device_count }};
+            {% endif %}
+            {% if configuration_chassis.aggregated_devices.ethernet.lacp is defined %}
+            lacp {
+                {% if configuration_chassis.aggregated_devices.ethernet.lacp.system_priority is defined %}
+                system-priority {{ configuration_chassis.aggregated_devices.ethernet.lacp.system_priority }};
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}

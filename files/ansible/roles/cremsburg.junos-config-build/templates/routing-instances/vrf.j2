@@ -1,0 +1,30 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# vrf import / export                                                                 #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.vrf_import is defined %}
+        vrf-import {{ each.vrf_import }};
+        {% endif %}
+        {% if each.vrf_export is defined %}
+        vrf-export {{ each.vrf_export }};
+        {% endif %}
+
+        {#- ---------------------------------------------------------------------------------- #}
+        {# vrf target                                                                          #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.vrf_target is defined %}
+            {% if each.vrf_target.auto is defined %}
+        vrf-target {
+            {{ each.vrf_target.community }};
+            auto;
+        }
+            {% else %}
+        vrf-target {{ each.vrf_target.community }};
+            {% endif %}
+        {% endif %}
+
+        {#- ---------------------------------------------------------------------------------- #}
+        {# vrf table label                                                             #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.vrf_table_label is defined %}
+        vrf-table-label;
+        {% endif %}

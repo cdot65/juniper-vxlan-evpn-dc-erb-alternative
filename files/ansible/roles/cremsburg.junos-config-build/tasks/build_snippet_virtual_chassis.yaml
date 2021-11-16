@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "virtual-chassis"
+  template:
+    src: "junos_virtual_chassis.j2"
+    dest: "{{ build_directory }}/200_virtual_chassis.part.conf"

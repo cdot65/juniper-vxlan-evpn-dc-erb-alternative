@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "chassis"
+  template:
+    src: "junos_chassis.j2"
+    dest: "{{ build_directory }}/050_chassis.part.conf"

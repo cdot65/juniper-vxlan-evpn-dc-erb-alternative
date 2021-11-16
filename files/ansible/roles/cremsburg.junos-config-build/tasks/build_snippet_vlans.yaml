@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "vlans"
+  template:
+    src: "junos_vlans.j2"
+    dest: "{{ build_directory }}/220_vlans.part.conf"

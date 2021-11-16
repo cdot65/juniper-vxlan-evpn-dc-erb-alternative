@@ -1,0 +1,45 @@
+    {% if configuration_access.address_assignment is defined %}
+    address-assignment {
+        {% if configuration_access.address_assignment.pool is defined %}
+            {% for each in configuration_access.address_assignment.pool %}
+        pool {{ each.name }} {
+                {% if each.family.inet is defined %}
+            family inet {
+                network {{ each.family.inet.network }};
+                    {% for item in each.family.inet.range %}
+                range {{ item.name }} {
+                    low {{ item.low }};
+                    high {{ item.high }};
+                }
+                    {% endfor %}
+                    {% if each.family.inet.dhcp_attributes is defined %}
+                dhcp-attributes {
+                        {% if each.family.inet.dhcp_attributes.maximum_lease_time is defined %}
+                    maximum-lease-time 36000;
+                        {% endif %}
+                        {% if each.family.inet.dhcp_attributes.name_server is defined %}
+                    name-server {
+                            {% for each in each.family.inet.dhcp_attributes.name_server %}
+                        {{ each.name }};
+                            {% endfor %}
+                    }
+                        {% endif %}
+                        {% if each.family.inet.dhcp_attributes.router is defined %}
+                    router {
+                            {% for router in each.family.inet.dhcp_attributes.router %}
+                        {{ router.name }};
+                            {% endfor %}
+                    }
+                        {% endif %}
+                        {% if each.family.inet.dhcp_attributes.propagate_settings is defined %}
+                    propagate-settings {{ each.family.inet.dhcp_attributes.propagate_settings }};
+                        {% endif %}
+                }
+                    {% endif %}
+            }
+                {% endif %}
+        }
+            {% endfor %}
+        {% endif %}
+    }
+    {% endif %}

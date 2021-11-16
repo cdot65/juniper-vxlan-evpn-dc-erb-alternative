@@ -1,0 +1,24 @@
+---
+- name: check if directory is present
+  file: 
+    path: "{{ configuration_directory }}" 
+    state: directory
+  run_once: true
+
+
+- name: "assemble configurations to temp completed folder"
+  assemble: 
+    src: "{{ build_directory }}"
+    dest: "{{ completed_config_file }}"
+
+- name: Remove blank lines between matches
+  lineinfile:
+    path: "{{ completed_config_file }}"
+    regexp: '(^\s*$)'
+    state: absent
+
+- name: "copy completed config file to project's config directory backup purposes"
+  copy: 
+    src: "{{ completed_config_file }}"
+    dest: "{{ playbook_dir }}/{{ completed_config_file}}"
+    backup: yes

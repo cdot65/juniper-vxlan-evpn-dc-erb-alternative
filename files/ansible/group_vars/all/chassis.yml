@@ -1,0 +1,4 @@
+configuration_chassis:
+  aggregated_devices:
+    ethernet:
+      device_count: "8"

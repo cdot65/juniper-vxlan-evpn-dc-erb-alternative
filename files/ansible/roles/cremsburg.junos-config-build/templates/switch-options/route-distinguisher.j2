@@ -1,0 +1,11 @@
+    {#- ---------------------------------------------------------------------------------- #}
+    {# Junos Configuration stanza for "route-distinguisher"                                #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% set rd = configuration_switch_options.route_distinguisher %}
+    {% if rd is defined %}
+        {% if rd['@inactive'] is defined %}
+    inactive: route-distinguisher {{ rd.rd_type }};
+        {% else %}
+    route-distinguisher {{ rd.rd_type }};
+        {% endif %}
+    {% endif %}

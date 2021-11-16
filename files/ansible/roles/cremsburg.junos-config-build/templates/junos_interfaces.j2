@@ -1,0 +1,325 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "interfaces"                                         #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_interfaces is defined %}
+interfaces {
+    {% if configuration_interfaces.apply_groups is defined %}
+    {% if configuration_interfaces.apply_groups is not mapping and configuration_interfaces.apply_groups is not string %}
+    {% if configuration_interfaces.apply_groups|length > 1 %}
+    apply-groups [ {{ configuration_interfaces.apply_groups|join(' ') }} ];
+    {% else %}
+    apply-groups {{ configuration_interfaces.apply_groups|join(' ') }};
+    {% endif %}
+    apply-groups {{ configuration_interfaces.apply_groups }};
+    {% endif %}
+    {% endif %}
+    {% for each in configuration_interfaces.interface %}
+    {% if each['@inactive'] is defined %}
+    inactive: {{ each.name }} {
+    {% else %}
+    {{ each.name}} {
+    {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# disabled                                                                            #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.disable is defined %}
+        disable;
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# apply groups                                                                        #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.apply_groups is defined %}
+        {% if each.apply_groups is not mapping and each.apply_groups is not string %}
+        {% if each.apply_groups|length > 1 %}
+        apply-groups [ {{ each.apply_groups|join(' ') }} ];
+        {% else %}
+        apply-groups {{ each.apply_groups[0] }};
+        {% endif %}
+        {% endif %}
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# description                                                                         #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.description is defined %}
+        description "{{ each.description }}";
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# esi                                                                                 #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.esi is defined %}
+        esi {
+            {% if each.esi.identifier is defined %}
+            {{ each.esi.identifier }};
+            {% endif %}
+            {% if each.esi.all_active is defined %}
+            all-active;
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# aggregated ether options                                                            #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.aggregated_ether_options is defined %}
+        aggregated-ether-options {
+            {% if each.aggregated_ether_options.minimum_links is defined %}
+            minimum-links {{ each.aggregated_ether_options.minimum_links }};
+            {% endif %}
+            {% if each.aggregated_ether_options.lacp is defined %}
+            lacp {
+                {% if each.aggregated_ether_options.lacp.system_id is defined %}
+                system-id {{ each.aggregated_ether_options.lacp.system_id }};
+                {% endif %}
+                {% if each.aggregated_ether_options.lacp.active is defined %}
+                active;
+                {% endif %}
+                {% if each.aggregated_ether_options.lacp.periodic is defined %}
+                periodic {{ each.aggregated_ether_options.lacp.periodic }};
+                {% endif %}
+                {% if each.aggregated_ether_options.lacp.force_up is defined %}
+                force-up;
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# flexible_vlan_tagging                                                               #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.flexible_vlan_tagging is defined %}
+        flexible-vlan-tagging;
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# encapsulation                                                                       #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.encapsulation is defined %}
+        encapsulation {{ each.encapsulation }};
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# ether options                                                                       #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.ether_options is defined %}
+        ether-options {
+        {% if each.ether_options['ieee_802.3ad'] is defined %}
+            802.3ad {{ each.ether_options['ieee_802.3ad'].bundle }};
+        {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# native vlan                                                                         #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.native_vlan_id is defined %}
+        native-vlan-id {{ each.native_vlan_id }};
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# mtu                                                                                 #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.mtu is defined %}
+        mtu {{ each.mtu }};
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# unit                                                                                #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.unit is defined %}
+        {% if each.unit is not mapping and each.unit is not string %}
+        {% for each in each.unit %}
+        unit {{ each.name }} {
+            {% if each.description is defined %}
+            description "{{ each.description }}";
+            {% endif %}
+            {% if each.vlan_id is defined %}
+            vlan-id {{ each.vlan_id }};
+            {% endif %}
+            {% if each.family is defined %}
+            {#- ---------------------------------------------------------------------------------- #}
+            {# family inet                                                                          #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if each.family.inet is defined %}
+            family inet {
+                {% if each.family.inet.mtu is defined %}
+                mtu {{ each.family.inet.mtu }};
+                {% endif %}
+                {% if each.family.inet.address is defined %}
+                {% if each.family.inet.address.virtual_gateway_address is defined %}
+                address {{ each.family.inet.address.name }} {
+                    virtual-gateway-address {{ each.family.inet.address.virtual_gateway_address }};
+                }
+                {% elif each.family.inet.address.arp is defined %}
+                address {{ each.family.inet.address.name }} {
+                    {% for arp in each.family.inet.address.arp %}
+                    arp {{ arp.name }} mac {{ arp.mac }};
+                    {% endfor %}
+                }
+                {% elif each.family.inet.address.primary is defined %}
+                address {{ each.family.inet.address.name }} {
+                    primary;
+                }
+                {% else %}
+                address {{ each.family.inet.address.name }};
+                {% endif %}
+                {% endif %}
+                {% if each.family.inet.dhcp is defined %}
+                {% if each.family.inet.dhcp.force_discover is defined %}
+                dhcp {
+                    force-discover;
+                }
+                {% else %}
+                dhcp;
+                {% endif %}
+                {% endif %}
+            }
+            {% endif %}
+            {#- ---------------------------------------------------------------------------------- #}
+            {# family inet6                                                                        #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if each.family.inet6 is defined %}
+            family inet6 {
+                {% for iface in each.family.inet6.address %}
+                {% if iface.virtual_gateway_address is defined %}
+                address {{ iface.name }} {
+                    virtual-gateway-address {{ iface.virtual_gateway_address }};
+                }
+                {% else %}
+                address {{ iface.name }};
+                {% endif %}
+                {% endfor %}
+            }
+            {% endif %}
+            {#- ---------------------------------------------------------------------------------- #}
+            {# family mpls                                                                         #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if each.family.mpls is defined %}
+            family mpls;
+            {% endif %}
+            {#- ---------------------------------------------------------------------------------- #}
+            {# family iso                                                                          #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if each.family.iso is defined %}
+            {% if each.family.iso is not mapping  %}
+            family iso;
+            {% else %}
+            family iso {
+                {% if each.family.iso.address is defined %}
+                address {{ each.family.iso.address.name }};
+                {% endif %}
+            }
+            {% endif %}
+            {% endif %}
+            {#- ---------------------------------------------------------------------------------- #}
+            {# family ethernet switching                                                           #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if each.family.ethernet_switching is defined %}
+            family ethernet-switching {
+                {% if each.family.ethernet_switching.interface_mode is defined %}
+                interface-mode {{ each.family.ethernet_switching.interface_mode }};
+                {% endif %}
+                {% if each.family.ethernet_switching.vlan is defined %}
+                {% if each.family.ethernet_switching.vlan.members|length > 1 %}
+                vlan {
+                    members [ {{ each.family.ethernet_switching.vlan.members|join(' ') }} ];
+                }
+                {% else %}
+                vlan {
+                    members {{ each.family.ethernet_switching.vlan.members[0] }};
+                }
+                {% endif %}
+                {% endif %}
+            }
+            {% endif %}
+            {#- ---------------------------------------------------------------------------------- #}
+            {# mac address                                                                         #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if each.mac is defined %}
+            mac {{ each.mac }};
+            {% endif %}
+            {% endif %}
+        }
+        {% endfor %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# family inet                                                                         #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% elif each.unit is mapping and each.unit is not string %}
+        unit {{ each.unit.name }} {
+            {% if each.unit.description is defined %}
+            description "{{ each.unit.description }}";
+            {% endif %}
+            {% if each.unit.family is defined %}
+            {# FAMILY INET SECTION - BEGIN #}
+            {% if each.unit.family.inet is defined %}
+            family inet {
+                {% if each.unit.family.inet.address is defined %}
+                {% if each.unit.family.inet.address.virtual_gateway_address is defined %}
+                address {{ each.unit.family.inet.address.name }} {
+                    virtual-gateway-address {{ each.unit.family.inet.address.virtual_gateway_address }};
+                }
+                {% elif each.unit.family.inet.address.arp is defined %}
+                address {{ each.unit.family.inet.address.name }} {
+                    {% for arp in each.unit.family.inet.address.arp %}
+                    arp {{ arp.name }} mac {{ arp.mac }};
+                    {% endfor %}
+                }
+                {% else %}
+                address {{ each.unit.family.inet.address.name }};
+                {% endif %}
+                {% endif %}
+                {% if each.unit.family.inet.dhcp is defined %}
+                {% if each.unit.family.inet.dhcp.force_discover is defined %}
+                dhcp {
+                    force-discover;
+                }
+                {% else %}
+                dhcp;
+                {% endif %}
+                {% endif %}
+            }
+            {% endif %}
+            {# FAMILY INET SECTION - END #}
+            {# FAMILY INET6 SECTION - BEGIN #}
+            {% if each.unit.family.inet6 is defined %}
+            family inet6 {
+                {% if each.unit.family.inet6.address is defined %}
+                address {{ each.unit.family.inet6.address.name }};
+                {% endif %}
+            }
+            {% endif %}
+            {# FAMILY INET6 SECTION - END #}
+            {# FAMILY ISO SECTION - BEGIN #}
+            {% if each.unit.family.iso is defined %}
+            {% if each.unit.family.iso is not iterable %}
+            family iso;
+            {% else %}
+            family iso {
+                {% if each.unit.family.iso.address is defined %}
+                address {{ each.unit.family.iso.address.name }};
+                {% endif %}
+            }
+            {% endif %}
+            {% endif %}
+            {# FAMILY ISO SECTION - END #}
+            {# FAMILY MPLS SECTION - BEGIN #}
+            {% if each.unit.family.mpls is defined %}
+            family mpls;
+            {% endif %}
+            {# FAMILY ISO SECTION - END #}
+            {# FAMILY ETHERNET-SWITCHING SECTION - BEGIN #}
+            {% if each.unit.family.ethernet_switching is defined %}
+            family ethernet-switching {
+                {% if each.unit.family.ethernet_switching.interface_mode is defined %}
+                interface-mode {{ each.unit.family.ethernet_switching.interface_mode }};
+                {% endif %}
+                {% if each.unit.family.ethernet_switching.vlan is defined %}
+                vlan {
+                    members {{ each.unit.family.ethernet_switching.vlan.members }};
+                }
+                {% endif %}
+            }
+            {% endif %}
+            {# FAMILY ETHERNET-SWITCHING SECTION - END #}
+            {% endif %}
+        }
+        {% endif %}
+        {% endif %}
+    }
+    {% endfor %}
+}
+{% endif %}

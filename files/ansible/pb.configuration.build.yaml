@@ -1,0 +1,64 @@
+---
+### ---------------------------------------------------------------------------
+### VALIDATE THAT ANSIBLE CONTROL MACHINE IS RUNNING A RECENT ANSIBLE VERSION
+### ---------------------------------------------------------------------------
+- hosts: all
+  connection: local
+  gather_facts: False
+  become: False
+  tasks:
+    - name: "Check ansible version >=2.7.8"
+      assert:
+        msg: "Ansible must be v2.7.8 or higher"
+        that:
+          - ansible_version.string is version("2.7.8", ">=")
+      tags:
+        - check
+  run_once: True
+
+### ---------------------------------------------------------------------------
+### REMOVE AND RECREATE CONFIGURATIONS
+### ---------------------------------------------------------------------------
+- hosts: all
+  connection: local
+  gather_facts: False
+  roles:
+    - { role: cremsburg.junos-config-build }
+
+# ### ---------------------------------------------------------------------------
+# ### POST TO PINECONE
+# ### ---------------------------------------------------------------------------
+# - hosts: all
+#   connection: local
+#   gather_facts: False
+#   tasks:
+
+#     ### ------------------------------------------------------------
+#     ### DELETE PREVIOUS CONFIGS
+#     ### ------------------------------------------------------------
+#     - name: "### DELETE to Pinecone"
+#       uri:
+#         url: "http://{{ api_baseurl }}/golden/delete/"
+#         method: DELETE
+#         headers:
+#           authorization: "Token {{ api_token }}"
+#         status_code: 204
+#       run_once: true
+#       ignore_errors: true
+
+#     ### ------------------------------------------------------------
+#     ### WRITING CONFIGURATIONS TO FILES
+#     ### ------------------------------------------------------------
+#     - name: "### POST to Pinecone"
+#       uri:
+#         url: "http://{{ api_baseurl }}/golden/configs/"
+#         method: POST
+#         headers:
+#           authorization: "Token {{ api_token }}"
+#         body:
+#           hostname: "{{ inventory_hostname }}"
+#           golden: "{{ completed_config_file | string }}"
+#         # force_basic_auth: yes
+#         status_code: 201
+#         body_format: json
+#       ignore_errors: true

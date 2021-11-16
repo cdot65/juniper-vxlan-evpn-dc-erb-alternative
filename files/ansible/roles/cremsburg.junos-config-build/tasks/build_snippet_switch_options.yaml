@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "switch-options"
+  template:
+    src: "junos_switch_options.j2"
+    dest: "{{ build_directory }}/170_switch_options.part.conf"

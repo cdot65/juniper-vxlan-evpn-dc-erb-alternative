@@ -1,0 +1,33 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "protocols"                                          #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_protocols is defined %}
+protocols {
+
+{% include './protocols/mpls.j2' %}
+
+{% include './protocols/evpn.j2' %}
+
+{% include './protocols/bgp.j2' %}
+
+{% include './protocols/isis.j2' %}
+
+{% include './protocols/ldp.j2' %}
+
+{% include './protocols/l2-learning.j2' %}
+
+{% include './protocols/lldp.j2' %}
+
+{% include './protocols/lldp-med.j2' %}
+
+{% include './protocols/igmp-snooping.j2' %}
+
+{% include './protocols/mstp.j2' %}
+
+{% include './protocols/rstp.j2' %}
+
+{% include './protocols/ospf.j2' %}
+
+}
+{% endif %}

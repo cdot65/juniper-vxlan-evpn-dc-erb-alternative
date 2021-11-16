@@ -1,0 +1,21 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "chassis"                                            #}
+{# ------------------------------------------------------------------------------------#}
+{% if configuration_chassis is defined %}
+chassis {
+
+{% include './chassis/redundancy.j2' %}
+
+{% include './chassis/aggregated-devices.j2' %}
+
+{% include './chassis/fpc.j2' %}
+
+{% include './chassis/network-services.j2' %}
+
+{% include './chassis/disk-partition.j2' %}
+
+{% include './chassis/alarm.j2' %}
+
+}
+{% endif %}

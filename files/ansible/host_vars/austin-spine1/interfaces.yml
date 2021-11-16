@@ -1,0 +1,71 @@
+configuration_interfaces:
+  interface:
+    # ### PHYSICAL INTERFACES
+    - name: xe-0/0/0
+      description: "[xe-0/0/0] to austin-leaf1"
+      mtu: 9216
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "10.1.0.0/31"
+
+    - name: xe-0/0/1
+      description: "[xe-0/0/1] to austin-leaf2"
+      mtu: 9216
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "10.1.0.4/31"
+
+    - name: xe-0/0/2
+      description: "[xe-0/0/2] to austin-leaf3"
+      mtu: 9216
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "10.1.0.8/31"
+
+    - name: xe-0/0/3
+      description: "[xe-0/0/3] to austin-leaf4"
+      mtu: 9216
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "10.1.0.12/31"
+
+    # ### MGMT INTERFACE
+    - name: em0
+      unit:
+        name: "0"
+        description: "out of band interface"
+        family:
+          inet:
+            address:
+              name: "{{ ansible_host }}/24"
+
+    # ### vQFX PFE INTERFACE
+    - name: em1
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "169.254.0.2/24"
+
+    # ### LOOPBACK INTERFACES
+    - name: lo0
+      unit:
+        - name: "0"
+          description: "loopback0 interface"
+          family:
+            inet:
+              address:
+                name: "{{ device.loopback0.ipv4 }}/32"

@@ -1,0 +1,64 @@
+    {#- ---------------------------------------------------------------------------------- #}
+    {# Junos Configuration stanza for "vrf-import"                                         #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% set vrf_import = configuration_switch_options.vrf_import %}
+    {% if vrf_import is defined %}
+        {% if vrf_import['@inactive'] is defined and vrf_import['#text'] is defined %}
+    inactive: vrf-import {{ vrf_import['#text'] }};
+        {% elif vrf_import['#text'] is defined %}
+    vrf-import {{ vrf_import['#text'] }};
+        {% else %}
+            {% for each in vrf_import %}
+    vrf-import {{ each }};
+            {% endfor %}
+        {% endif %}
+    {% endif %}
+
+    {#- ---------------------------------------------------------------------------------- #}
+    {# Junos Configuration stanza for "vrf-target"                                         #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% set vrf_target = configuration_switch_options.vrf_target %}
+    {% if vrf_target is defined %}
+        {% if vrf_target is string %}
+    vrf-target {{ vrf_target }};
+        {% else %}
+            {% if vrf_target['@inactive'] is defined %}
+    inactive: vrf-target {
+            {% else %}
+    vrf-target {
+                {% if vrf_target.community is defined %}
+        {{ vrf_target.community }};
+                {% endif %}
+                {% if vrf_target.auto is defined %}
+                    {% if vrf_target.auto is not mapping and vrf_target.auto is not string %}
+        auto;
+                    {% else %}
+        auto {
+                        {% if vrf_target.auto.import_as is defined %}
+                            {% if vrf_target.auto.import_as is not mapping and vrf_target.auto.import_as is not string %}
+                                {% for each in vrf_target.auto.import_as %}
+            import-as {{ each.name}} {
+                                    {% if each.vni_list is not mapping and each.vni_list is not string %}
+                vni-list [ {{ each.vni_list|join(' ') }} ];
+                                    {% else %}
+                vni-list {{ each.vni_list }};
+                                    {% endif %}
+            }
+                                {% endfor %}
+                            {% else %}
+            import-as {{ vrf_target.auto.import_as.name}} {
+                                {% if vrf_target.auto.import_as.vni_list is not mapping and vrf_target.auto.import_as.vni_list is not string %}
+                vni-list [ {{ vrf_target.auto.import_as.vni_list|join(' ') }} ];
+                                {% else %}
+                vni-list {{ vrf_target.auto.import_as.vni_list }};
+                                {% endif %}
+            }
+                            {% endif %}
+                        {% endif %}
+        }
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+    }
+        {% endif %}
+    {% endif %}

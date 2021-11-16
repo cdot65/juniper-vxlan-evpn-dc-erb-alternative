@@ -1,0 +1,36 @@
+---
+configuration_routing_instances:
+  instance:
+
+    # ### VRF AUSTIN_VRF: vrf
+    - name: AUSTIN_VRF
+      instance_type: "vrf"
+
+      routing_options:
+        multipath: null
+        auto_export: null
+      
+      ### PROTOCOLS
+      protocols:
+        evpn:
+          ip_prefix_routes:
+            advertise: direct-nexthop
+            encapsulation: vxlan
+            vni: 10000
+            export: "( BGP-AOS-Policy || DEFAULT_DENY )"
+
+      ### INTERFACES
+      interface:
+        - name: "irb.9"
+        - name: "irb.10"
+        - name: "irb.11"
+        - name: "lo0.1"
+
+      ### ROUTE DISTINGUISHERS
+      route_distinguisher:
+        rd_type: "{{ device.loopback0.ipv4 }}:2"
+
+      ### VRF configurations
+      vrf_target:
+        community: "target:10000:1"
+      vrf_table_label: null

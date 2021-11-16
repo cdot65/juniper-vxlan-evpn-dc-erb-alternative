@@ -1,0 +1,25 @@
+### ---------------------------------------------------------------------------
+### APPLY BOOTSTRAP CONFIGURATION TO DEVICES
+### ---------------------------------------------------------------------------
+- hosts: all
+  connection: local
+  gather_facts: False
+  become: False
+  roles: 
+    - cremsburg.junos-config-bootstrap
+    - juniper.junos
+  tasks:
+    - name: "### APPLY BOOTSTRAP CONFIGURATION ON REMOTE DEVICE ###"
+      juniper_junos_config:
+        load: override
+        user: "automation"
+        passwd: "juniper123"
+        # ssh_private_key_file: "{{ provider_info.ssh_private_key_file }}"
+        src: "{{ bootstrap_config_file }}"
+        timeout: 240
+      register: result
+
+    - name: "### PRINT THE RESULT TO CONSOLE ###"
+      debug:
+        var: result.diff_lines
+      when: result.diff_lines is defined

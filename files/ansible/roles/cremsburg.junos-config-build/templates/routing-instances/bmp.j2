@@ -1,0 +1,39 @@
+        {# ----------------------------------------------------------------------------------- #}
+        {# bmp                                                                                 #}
+        {# ----------------------------------------------------------------------------------- #}
+        {% if each.bmp is defined %}
+        bmp {
+            {# ----------------------------------------------------------------------------------- #}
+            {# station                                                                             #}
+            {# ----------------------------------------------------------------------------------- #}
+            {% if each.bmp.station is defined %}
+            {% for server in each.bmp.station %}
+            station {{ server.name }} {
+                initiation-message {{ inventory_hostname }};
+                local-address {{ server.local_address }};
+                {% if server.local_port is defined %}
+                local-port {{ server.local_port }};
+                {% endif %}
+                connection-mode {{ server.connection_mode }};
+                monitor {{ server.monitor }};
+                {% if server.routing_instance is defined %}
+                routing-instance {{ server.routing_instance }};
+                {% endif %}
+                {% if server.route_monitoring is defined %}
+                route-monitoring {
+                    {% if server.route_monitoring.pre_policy is defined %}
+                    pre-policy;
+                    {% endif %}
+                    {% if server.route_monitoring.post_policy is defined %}
+                    post-policy;
+                    {% endif %}
+                }
+                {% endif %}
+                station-address {{ server.station_address }};
+                station-port {{ server.station_port }};
+                statistics-timeout {{ server.statistics_timeout }};
+            }
+            {% endfor %}
+            {% endif %}
+        }
+        {% endif %}

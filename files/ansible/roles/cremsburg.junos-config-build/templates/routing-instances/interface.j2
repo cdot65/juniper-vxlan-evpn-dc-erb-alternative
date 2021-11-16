@@ -1,0 +1,12 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# interface                                                                       #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.interface is defined %}
+            {% if each.interface is not mapping and each.interface is not string %}
+                {% for each in each.interface %}
+        interface {{ each.name }};
+                {% endfor %}
+            {% else %}
+        interface {{ each.interface.name }};
+            {% endif %}
+        {% endif %}

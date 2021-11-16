@@ -1,0 +1,26 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "virtual-chassis"                                    #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_virtual_chassis is defined %}
+virtual-chassis {
+    {% if configuration_virtual_chassis.preprovisioned is defined %}
+    preprovisioned;
+    {% endif %}
+    {% if configuration_virtual_chassis.member is defined %}
+    {% if configuration_virtual_chassis.member == configuration_virtual_chassis.member|list %}
+    {% for each in configuration_virtual_chassis.member %}
+    member {{ each.name }} {
+        role {{ each.role }};
+        serial-number {{ each.serial_number }};
+    }
+    {% endfor %}
+    {% else %}
+    member {{ configuration_virtual_chassis.member.name }} {
+        role {{ configuration_virtual_chassis.member.role }};
+        serial-number {{ configuration_virtual_chassis.member.serial_number }};
+    }
+    {% endif %}
+    {% endif %}
+}
+{% endif %}

@@ -1,0 +1,34 @@
+
+    {# ----------------------------------------------------------------------------------- #}
+    {# lldp-med                                                                            #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.lldp_med is defined %}
+    lldp-med {
+        {% if configuration_protocols.lldp_med.port_description_type is defined %}
+        port-description-type interface-alias;
+        {% endif %}
+        {% if configuration_protocols.lldp_med.interface is defined %}
+        {# multiple lldp_med interfaces #}
+            {% if configuration_protocols.lldp_med.interface is not mapping and configuration_protocols.lldp_med.interface is not string %}
+                {% for each in configuration_protocols.lldp_med.interface %}
+                    {% if each.disable is defined %}
+        interface {{ each.name }} {
+            disable;
+        }
+                    {% else %}
+        interface {{ each.name }};
+                    {% endif %}
+                {% endfor %}
+        {# SINGLE INSTANCE #}
+            {% else %}
+                {% if configuration_protocols.lldp_med.interface.disable is defined %}
+        interface {{ configuration_protocols.lldp_med.interface.name }} {
+            disable;
+        }
+                {% else %}
+        interface {{ configuration_protocols.lldp_med.interface.name }};
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    }
+    {% endif %}

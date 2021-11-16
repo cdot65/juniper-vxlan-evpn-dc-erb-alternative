@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "security"
+  template:
+    src: "junos_security.j2"
+    dest: "{{ build_directory }}/070_security.part.conf"

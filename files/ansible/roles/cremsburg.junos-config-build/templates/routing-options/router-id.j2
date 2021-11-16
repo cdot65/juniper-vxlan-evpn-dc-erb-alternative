@@ -1,0 +1,6 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# router_id                                                                           #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.router_id is defined %}
+    router-id {{ configuration_routing_options.router_id }};
+    {% endif %}

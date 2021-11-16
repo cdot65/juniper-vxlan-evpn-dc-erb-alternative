@@ -1,0 +1,34 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# static routes                                                                       #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.static is defined %}
+    static {
+        {% if configuration_routing_options.static.route is defined %}
+            {% for each in configuration_routing_options.static.route %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# standard static route                                                               #}
+        {# ----------------------------------------------------------------------------------- #}
+                {% if each.no_retain is not defined and each.no_readvertise is not defined %}
+                    {% for route in each.next_hop %}
+        route {{ each.name }} next-hop {{ route }};
+                    {% endfor %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# if no_readvertise and no_retain is defined in the static route                      #}
+        {# ----------------------------------------------------------------------------------- #}
+                {% else %}
+        route {{ each.name }} {
+                    {% for item in each.next_hop %}
+            next-hop {{ item }};
+                    {% endfor %}
+                    {% if each.no_retain is defined %}
+            no-retain;
+                    {% endif %}
+                    {% if each.no_readvertise is defined %}
+            no-readvertise;
+                    {% endif %}
+        }
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    }
+    {% endif %}

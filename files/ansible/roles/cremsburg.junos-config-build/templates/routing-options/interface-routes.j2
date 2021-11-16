@@ -1,0 +1,16 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# interface-routes                                                                    #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.interface_routes is defined %}
+        {% if configuration_routing_options.interface_routes['@inactive'] is defined %}
+    inactive: interface-routes {
+        {% else %}
+    interface-routes {
+        {% endif %}
+        {% if configuration_routing_options.interface_routes.rib_group is defined %}
+            {% for key, value in configuration_routing_options.interface_routes.rib_group.items() %}
+        rib-group {{ key }} {{ value }};
+            {% endfor %}
+        {% endif %}
+    }
+    {% endif %}

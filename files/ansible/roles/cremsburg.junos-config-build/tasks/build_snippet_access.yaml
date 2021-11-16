@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "access"
+  template:
+    src: "junos_access.j2"
+    dest: "{{ build_directory }}/190_access.part.conf"

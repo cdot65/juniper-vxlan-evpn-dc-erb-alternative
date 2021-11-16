@@ -1,0 +1,42 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# access                                                                   #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.access is defined %}
+        access {
+            {% if each.access.address_assignment is defined %}
+            address-assignment {
+                {% if each.access.address_assignment.pool is defined %}
+                {% for pool in each.access.address_assignment.pool %}
+                pool {{ pool.name }} {
+                    {% if pool.family.inet is defined %}
+                    family inet {
+                        network {{ pool.family.inet.network }};
+                        {% for item in pool.family.inet.range %}
+                        range {{ item.name }} {
+                            low {{ item.low }};
+                            high {{ item.high }};
+                        }
+                        {% endfor %}
+                        {% if pool.family.inet.dhcp_attributes is defined %}
+                        dhcp-attributes {
+                            {% if pool.family.inet.dhcp_attributes.router is defined %}
+                            router {
+                            {% for router in pool.family.inet.dhcp_attributes.router %}
+                                {{ router.name }};
+                            {% endfor %}
+                            }
+                            {% endif %}
+                            {% if pool.family.inet.dhcp_attributes.propagate_settings is defined %}
+                            propagate-settings {{ pool.family.inet.dhcp_attributes.propagate_settings }};
+                            {% endif %}
+                        }
+                        {% endif %}
+                    }
+                    {% endif %}
+                }
+                {% endfor %}
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}

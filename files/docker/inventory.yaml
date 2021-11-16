@@ -1,0 +1,19 @@
+---
+all:
+  children:
+    spine:
+      hosts:
+        austin-spine1:
+          ansible_host: "192.168.105.222"
+        austin-spine2:
+          ansible_host: "192.168.105.223"
+    leaf:
+      hosts:
+        austin-leaf1:
+          ansible_host: "192.168.105.224"
+        austin-leaf2:
+          ansible_host: "192.168.105.225"
+        austin-leaf3:
+          ansible_host: "192.168.105.226"
+        austin-leaf4:
+          ansible_host: "192.168.105.227"

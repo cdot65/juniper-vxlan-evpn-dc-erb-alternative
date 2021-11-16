@@ -1,0 +1,7 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "apply-groups"                                       #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_apply_groups is defined %}
+apply-groups {{ configuration_apply_groups }};
+{% endif %}

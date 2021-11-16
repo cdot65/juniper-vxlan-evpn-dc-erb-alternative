@@ -1,0 +1,168 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "groups"                                             #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_groups is defined %}
+groups {
+    {% for each in configuration_groups %}
+    {{ each.name }} {
+        {# ----------------------------------------------------------------------------------- #}
+        {# interfaces                                                                          #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.interfaces is defined %}
+        interfaces {
+            {{ each.interfaces.interface.name }} {
+                {% if each.interfaces.interface.mtu is defined %}
+                mtu {{ each.interfaces.interface.mtu }};
+                {% endif %}
+                {% if each.interfaces.interface.unit is defined %}
+                unit {{ each.interfaces.interface.unit.name }} {
+                    {% if each.interfaces.interface.unit.proxy_macip_advertisement is defined %}
+                    proxy-macip-advertisement;
+                    {% endif %}
+                    {% if each.interfaces.interface.unit.virtual_gateway_accept_data is defined %}
+                    virtual-gateway-accept-data;
+                    {% endif %}
+                    {% if each.interfaces.interface.unit.family.ethernet_switching is defined %}
+                    family ethernet-switching {
+                        interface-mode {{ each.interfaces.interface.unit.family.ethernet_switching.interface_mode }};
+                        {% if each.interfaces.interface.unit.family.ethernet_switching.vlan is defined %}
+                        vlan {
+                            members {{ each.interfaces.interface.unit.family.ethernet_switching.vlan.members }};
+                        }
+                        {% endif %}
+                        {% if each.interfaces.interface.unit.family.ethernet_switching.filter is defined %}
+                        filter {
+                            {% if each.interfaces.interface.unit.family.ethernet_switching.filter.input is defined %}
+                            input {{ each.interfaces.interface.unit.family.ethernet_switching.filter.input }};
+                            {% endif %}
+                        }
+                        {% endif %}
+                    }
+                    {% endif %}
+                    {% if each.interfaces.interface.unit.family.inet is defined %}
+                    family inet {
+                        address {{ each.interfaces.interface.unit.family.inet.address.name }} {
+                            {% if each.interfaces.interface.unit.family.inet.address.primary is defined %}
+                            primary;
+                            {% endif %}
+                            {% if each.interfaces.interface.unit.family.inet.address.preferred is defined %}
+                            preferred;
+                            {% endif %}
+                        }
+                    }
+                    {% endif %}
+                    {% if each.interfaces.interface.unit.virtual_gateway_v4_mac is defined %}
+                    virtual-gateway-v4-mac {{ each.interfaces.interface.unit.virtual_gateway_v4_mac }};
+                    {% endif %}
+                }
+                {% endif %}
+                {% if each.interfaces.interface.aggregated_ether_options is defined %}
+                aggregated-ether-options {
+                    {% if each.interfaces.interface.aggregated_ether_options.lacp is defined %}
+                    lacp {
+                        {% if each.interfaces.interface.aggregated_ether_options.lacp.active is defined %}
+                        active;
+                        {% endif %}
+                        {% if each.interfaces.interface.aggregated_ether_options.lacp.periodic is defined %}
+                        periodic {{ each.interfaces.interface.aggregated_ether_options.lacp.periodic }};
+                        {% endif %}
+                    }
+                    {% endif %}
+                }
+                {% endif %}
+            }
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# system                                                                              #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.system is defined %}
+        system {
+            {% if each.system.scripts is defined %}
+            scripts {
+                {% if each.system.scripts.op is defined %}
+                op {
+                    {% if each.system.scripts.op.allow_url_for_python is defined %}
+                    allow-url-for-python;
+                    {% endif %}
+                }
+                {% endif %}
+                {% if each.system.scripts.language is defined %}
+                language {{ each.system.scripts.language }};
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# protocols                                                                           #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.protocols is defined %}
+        protocols {
+            {# ----------------------------------------------------------------------------------- #}
+            {# isis                                                                                #}
+            {# ----------------------------------------------------------------------------------- #}
+            {% if each.protocols.isis is defined %}
+            isis {
+                {% if each.protocols.isis.reference_bandwidth is defined %}
+                reference-bandwidth {{ each.protocols.isis.reference_bandwidth }};
+                {% endif %}
+                {% if each.protocols.isis.lsp_lifetime is defined %}
+                lsp-lifetime {{ each.protocols.isis.lsp_lifetime }};
+                {% endif %}
+                {# ----------------------------------------------------------------------------------- #}
+                {# isis levels                                                                         #}
+                {# ----------------------------------------------------------------------------------- #}
+                {% if each.protocols.isis.level is defined %}
+                {% if each.protocols.isis.level is not mapping and each.protocols.isis.level is not string %}
+                {% for level in each.protocols.isis.level %}
+                {% if level.disable is defined %}
+                level {{ level.name }} disable;
+                {% else %}
+                level {{ level.name }} {
+                    {% if level.wide_metrics_only is defined %}
+                    wide-metrics-only;
+                    {% endif %}
+                    {% if level.prefix_export_limit is defined %}
+                    prefix-export-limit {{ level.prefix_export_limit }};
+                    {% endif %}
+                }
+                {% endif %}
+                {% endfor %}
+                {% else %}
+                {% if each.protocols.isis.level.disable is defined %}
+                level {{ each.protocols.isis.level.name }} disable;
+                {% else %}
+                level {{ each.protocols.isis.level.name }} {
+                    {% if each.protocols.isis.level.wide_metrics_only is defined %}
+                    wide-metrics-only;
+                    {% endif %}
+                    {% if each.protocols.isis.level.prefix_export_limit is defined %}
+                    prefix-export-limit {{ each.protocols.isis.level.prefix_export_limit }};
+                    {% endif %}
+                }
+                {% endif %}
+                {% endif %}
+                {% endif %}
+                {# ----------------------------------------------------------------------------------- #}
+                {# isis interface                                                                      #}
+                {# ----------------------------------------------------------------------------------- #}
+                {% for iface in each.protocols.isis.interface %}
+                interface {{ iface.name }} {
+                    {% if iface.hello_padding_type is defined %}
+                    hello-padding disable;
+                    {% endif %}
+                    {% if iface.point_to_point is defined %}
+                    point-to-point;
+                    {% endif %}
+                }
+                {% endfor %}
+            {% endif %}
+            }
+        }
+        {% endif %}
+    }
+    {% endfor %}
+}
+{% endif %}

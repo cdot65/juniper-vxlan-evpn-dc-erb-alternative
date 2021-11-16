@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "routing-instances"
+  template:
+    src: "junos_routing_instances.j2"
+    dest: "{{ build_directory }}/115_routing_instances.part.conf"

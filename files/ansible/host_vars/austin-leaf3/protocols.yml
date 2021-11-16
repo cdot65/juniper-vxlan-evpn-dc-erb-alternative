@@ -1,0 +1,101 @@
+configuration_protocols:
+  bgp:
+    log_updown: null
+    graceful_restart: null
+    multipath: null
+    group:
+      # ### UNDERLAY
+      - name: "UNDERLAY"
+        export: "( BGP-AOS-Policy || DEFAULT_DENY )"
+        type: external
+        # family:
+        #   inet:
+        #     unicast: null
+        neighbor:
+          - name: "10.1.0.8"
+            description: "underlay: austin-spine1"
+            local_address: "10.1.0.9"
+            family:
+              inet:
+                unicast: null
+            peer_as: 65001
+          - name: "10.1.0.10"
+            description: "underlay: austin-spine2"
+            local_address: "10.1.0.11"
+            family:
+              inet:
+                unicast: null
+            peer_as: 65002
+        multipath:
+          multiple_as: null
+
+      # ### OVERLAY
+      - name: "OVERLAY"
+        type: external
+        multihop:
+          ttl: 1
+          no_nexthop_change: null
+        family:
+          evpn:
+            signaling: null
+            loops: 2
+        multipath:
+          multiple_as: null
+        neighbor:
+
+          # ### SPINE1
+          - name: "10.1.1.1"
+            peer_as: 65001
+            description: "overlay: austin-spine1"
+            local_address: "{{ device.loopback0.ipv4 }}"
+            family:
+              evpn:
+                signaling: null
+
+          # ### SPINE2
+          - name: "10.1.1.2"
+            peer_as: 65002
+            description: "overlay: austin-spine2"
+            local_address: "{{ device.loopback0.ipv4 }}"
+            family:
+              evpn:
+                signaling: null
+
+  evpn:
+    encapsulation: "vxlan"
+    extended_vni_list: all
+    default_gateway: do-not-advertise
+    vni_options:
+      # ### vlan 9
+      - name: 10009
+        vrf_target: target:10009:1
+
+      # ### vlan 10
+      - name: 10010
+        vrf_target: target:10010:1
+
+      # ### vlan 11
+      - name: 10011
+        vrf_target: target:10011:1
+
+  # igmp_snooping:
+  #   vlan:
+  #     - name: "vlan_1"
+  #       interface: "ae11.0"
+  #       multicast_router_interface: null
+
+  lldp:
+    interface:
+      - name: all
+      - name: em0
+        disable: null
+    port_description_type: interface-alias
+    port_id_subtype: interface-name
+    neighbour_port_info_display: port-id
+
+  rstp:
+    interface:
+      - name: xe-0/0/11
+        disable: null
+    bridge_priority: 0
+    bpdu_block_on_edge: null

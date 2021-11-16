@@ -1,0 +1,33 @@
+
+    {# ----------------------------------------------------------------------------------- #}
+    {# ospf                                                                                #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.ospf is defined %}
+    ospf {
+        {% if configuration_protocols.ospf.export is defined %}
+            {% if configuration_protocols.ospf.export is not mapping and configuration_protocols.ospf.export is not string %}
+        export {{ configuration_protocols.ospf.export[0] }};
+            {% else %}
+        export {{ configuration_protocols.ospf.export[0] }};
+            {% endif %}
+        {% endif %}
+        {% for each in configuration_protocols.ospf.area %}
+        area {{ each.name }} {
+            {# Multiple interfaces #}
+            {% for iface in each.interface %}
+                {% if iface.interface_type is defined %}
+            interface {{ iface.name }} {
+                interface-type {{ iface.interface_type }};
+            }
+                {% elif iface.passive is defined %}
+            interface {{ iface.name }} {
+                passive;
+            }
+                {% else %}
+            interface {{ iface.name }};
+                {% endif %}
+            {% endfor %}
+        }
+        {% endfor %}
+    }
+    {% endif %}

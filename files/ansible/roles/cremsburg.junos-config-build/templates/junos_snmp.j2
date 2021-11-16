@@ -1,0 +1,96 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "snmp"                                               #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_snmp is defined %}
+snmp {
+    {% if configuration_snmp.interface is defined %}
+    interface {{ configuration_snmp.interface }};
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_snmp.community                                                                      #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_snmp.community is defined %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# multiple configuration_snmp.community                                                             #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_snmp.community is not mapping and configuration_snmp.community is not string %}
+    {% for each in configuration_snmp.community %}
+    community {{ each.name }} {
+        {% if each.authorization is defined %}
+        authorization {{ each.authorization }};
+        {% endif %}
+        {% if each.clients is defined %}
+        clients {
+            {% if each.clients is not mapping and each.clients is not string %}
+            {% for item in each.clients %}
+            {% if item.restrict is defined %}
+            {{ item.name }} restrict;
+            {% else %}
+            {{ item }};
+            {% endif %}
+            {% endfor %}
+            {% else %}
+            {{ each.clients.name }};
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endfor %}
+    {% else %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# single configuration_snmp.community                                                               #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_snmp.community.name is defined %}
+    community {{ configuration_snmp.community.name }} {
+        {% if configuration_snmp.community.authorization is defined %}
+        authorization {{ configuration_snmp.community.authorization }};
+        {% endif %}
+        {% if configuration_snmp.community.clients is defined %}
+        clients {
+            {% for each in configuration_snmp.community.clients %}
+            {% if each.restrict is defined %}
+            {{ each.name }} restrict;
+            {% else %}
+            {{ each.name }};
+            {% endif %}
+            {% endfor %}
+        }
+        {% endif %}
+    }
+    {% endif %}
+    {% endif %}
+    {% endif %}
+    {% if configuration_snmp.trap_options is defined %}
+    trap-options {
+        {% if configuration_snmp.trap_options.source_address is defined %}
+        source-address {{ configuration_snmp.trap_options.source_address.address }};
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_snmp.trap_group is defined %}
+    {% for each in configuration_snmp.trap_group %}
+    trap-group {{ each.name }} {
+        {% if each.version is defined %}
+        version {{ each.version }};
+        {% endif %}
+        {% if each.categories is defined %}
+        categories {
+            {% if each.categories.chassis is defined %}
+            chassis;
+            {% endif %}
+            {% if each.categories.routing is defined %}
+            routing;
+            {% endif %}
+        }
+        {% endif %}
+        {% if each.targets is defined %}
+        targets {
+            {{ each.targets.name }};
+        }
+        {% endif %}
+    }
+    {% endfor %}
+    {% endif %}
+}
+{% endif %}

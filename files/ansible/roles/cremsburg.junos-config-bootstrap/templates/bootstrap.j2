@@ -1,0 +1,47 @@
+system {
+    root-authentication {
+        encrypted-password "$6$eG4FXiQW$J4/a.5GZlXlrKcvJTpbaMl.qIelPqjR5lFk.POmxo5O3Vp5OdjHFFJ97PMqvABuZZOGXrdvSE6YF3f33wilgO."; ## SECRET-DATA
+    }
+    login {
+        user automation {
+            class super-user;
+            authentication {
+                encrypted-password "$6$ZlA2peEY$803k5QuDxH1YBoHBVObfr0KVLavXLTu8nUlzIUmJbIhrMcQZZ3dWLD7Jj.IK0RKFXMJ6Csf2pnxg8MiuppZHj1"; ## SECRET-DATA
+            }
+        }
+    }
+    host-name {{ inventory_hostname }};
+    services {
+        ssh {
+            root-login allow;
+        }
+        netconf {
+            ssh;
+        }
+    }
+}
+interfaces {
+    em0 {
+        unit 0 {
+            family inet {
+                address {{ ansible_host }}/24;
+            }
+        }
+    }
+    em1 {
+        unit 0 {
+            family inet {
+                address 169.254.0.2/24;
+            }
+        }
+    }
+}
+routing-options {
+    static {
+        route 10.9.0.0/16 next-hop 192.168.105.1;
+        route 192.168.101.0/24 next-hop 192.168.105.1;
+        route 192.168.102.0/24 next-hop 192.168.105.1;
+        route 192.168.103.0/24 next-hop 192.168.105.1;
+        route 192.168.104.0/24 next-hop 192.168.105.1;
+    }
+}

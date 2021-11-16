@@ -1,0 +1,10 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# autonomous-system                                                                   #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.autonomous_system is defined %}
+        {% if configuration_routing_options.autonomous_system.asdot_notation is defined %}
+    autonomous-system {{ configuration_routing_options.autonomous_system.as_number }} asdot-notation;
+        {% else %}
+    autonomous-system {{ configuration_routing_options.autonomous_system.as_number }};
+        {% endif %}
+    {% endif %}

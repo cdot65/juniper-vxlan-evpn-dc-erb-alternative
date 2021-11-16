@@ -1,0 +1,22 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# forwarding-table                                                                    #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.forwarding_table is defined %}
+    forwarding-table {
+        {% if configuration_routing_options.forwarding_table.export is defined %}
+            {% for each in configuration_routing_options.forwarding_table.export %}
+        export {{ each }};
+            {% endfor %}
+        {% endif %}
+        {% if configuration_routing_options.forwarding_table.ecmp_fast_reroute is defined %}
+        ecmp-fast-reroute;
+        {% endif %}
+        {% if configuration_routing_options.forwarding_table.chained_composite_next_hop is defined %}
+        chained-composite-next-hop {
+            ingress {
+                evpn;
+            }
+        }
+        {% endif %}
+    }
+    {% endif %}

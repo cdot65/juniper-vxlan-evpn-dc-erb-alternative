@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "policy-options"
+  template:
+    src: "junos_policy_options.j2"
+    dest: "{{ build_directory }}/110_policy_options.part.conf"

@@ -1,0 +1,636 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "system"                                             #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_system is defined %}
+system {
+    {% if configuration_system.commit.synchronize is defined %}
+    commit synchronize;
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# SYSTEM LOGINS                                                                      #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.login is defined %}
+    login {
+        {% if configuration_system.login.retry_options is defined %}
+        retry-options {
+            {% if configuration_system.login.retry_options.tries_before_disconnect is defined %}
+            tries-before-disconnect {{ configuration_system.login.retry_options.tries_before_disconnect }};
+            {% endif %}
+            {% if configuration_system.login.retry_options.backoff_threshold is defined %}
+            backoff-threshold {{ configuration_system.login.retry_options.backoff_threshold }};
+            {% endif %}
+            {% if configuration_system.login.retry_options.backoff_factor is defined %}
+            backoff-factor {{ configuration_system.login.retry_options.backoff_factor }};
+            {% endif %}
+        }
+        {% endif %}
+        {% if configuration_system.login.class is defined %}
+        {% if configuration_system.login.class is not mapping and configuration_system.login.class is not string %}
+        {% for each in configuration_system.login.class %}
+        class {{ each.name }} {
+            {% if each.idle_timeout is defined %}
+            idle-timeout {{ each.idle_timeout }};
+            {% endif %}
+            {% if each.permissions is defined %}
+            permissions {{ each.permissions }};
+            {% endif %}
+        }
+        {% endfor %}
+        {% endif %}
+        {% endif %}
+        {% for each in configuration_system.login.user %}
+        {% if each['@inactive'] is defined %}
+        inactive: user {{ each.name }} {
+        {% else %}
+        user {{ each.name }} {
+        {% endif %}
+            {% if each.full_name is defined %}
+            full-name {{ each.full_name }};
+            {% endif %}
+            {% if each.uid is defined %}
+            uid {{ each.uid }};
+            {% endif %}
+            {% if each.class is defined %}
+            class {{ each.class }};
+            {% endif %}
+            {% if each.authentication is defined %}
+            authentication {
+                {% if each.authentication.encrypted_password is defined %}
+                encrypted-password "{{ each.authentication.encrypted_password }}";
+                {% endif %}
+                {% if each.authentication.ssh_rsa is defined %}
+                ssh-rsa "{{ each.authentication.ssh_rsa.name }}";
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endfor %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# mist                                                                              #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if device.mist is defined %}
+        {% if device.mist.login is defined %}
+        user {{ device.mist.login.name }} {
+            full-name {{ device.mist.login.full_name }};
+            {% if device.mist.login.uid is defined %}
+            uid {{ device.mist.login.uid }};
+            {% endif %}
+            {% if device.mist.login.class is defined %}
+            class {{ device.mist.login.class }};
+            {% endif %}
+            {% if device.mist.login.authentication is defined %}
+            authentication {
+                {% if device.mist.login.authentication.encrypted_password is defined %}
+                encrypted-password "{{ device.mist.login.authentication.encrypted_password }}";
+                {% endif %}
+                {% if device.mist.login.authentication.ssh_rsa is defined %}
+                ssh-rsa "{{ device.mist.login.authentication.ssh_rsa.name }}";
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# login message                                                                       #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.login.message is defined %}
+        message "{{ configuration_system.login.message }}";
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# root password                                                                       #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.root_authentication is defined %}
+    root-authentication {
+        encrypted-password "{{ configuration_system.root_authentication.encrypted_password }}";
+        {% if configuration_system.root_authentication.ssh_rsa is defined %}
+        ssh-rsa "{{ configuration_system.root_authentication.ssh_rsa.name }}";
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# snapshot                                                                            #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.auto_snapshot is defined %}
+    auto-snapshot;
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# domains                                                                             #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.domain_name is defined %}
+    domain-name {{ configuration_system.domain_name }};
+    {% endif %}
+    {% if configuration_system.domain_search is defined %}
+    domain-search {{ configuration_system.domain_search }};
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# redirects                                                                           #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.no_redirects is defined %}
+    no-redirects;
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# arp config                                                                          #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.arp is defined %}
+    arp {
+        {% if configuration_system.arp.aging_timer is defined %}
+        aging-timer {{ configuration_system.arp.aging_timer }};
+        {% endif %}
+        {% if configuration_system.arp.gratuitous_arp_on_ifup is defined %}
+        purging;
+        {% endif %}
+        {% if configuration_system.arp.purging is defined %}
+        gratuitous-arp-on-ifup;
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# mgmt instance                                                                       #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.management_instance is defined %}
+    management-instance;
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# auth order                                                                          #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.authentication_order is defined %}
+    {% if configuration_system.authentication_order is not mapping and configuration_system.authentication_order is not string  %}
+    authentication-order [ {{ configuration_system.authentication_order|join(' ') }} ];
+    {% else %}
+    authentication-order {{ configuration_system.authentication_order }};
+    {% endif %}
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# radius                                                                              #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.radius_server is defined %}
+    radius-server {
+        {% for each in configuration_system.radius_server %}
+        {{ each.name }} {
+            secret "{{ each.secret }}";
+            source-address "{{ each.source_address }}";
+        }
+        {% endfor %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# tacacs                                                                              #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.tacplus_server is defined %}
+    {% if configuration_system.tacplus_server['@inactive'] is defined %}
+    inactive: tacplus-server {
+    {% else %}
+    tacplus-server {
+    {% endif %}
+        {% if configuration_system.tacplus_server is not mapping and configuration_system.tacplus_server is not string %}
+        {% for each in configuration_system.tacplus_server %}
+        {% if each['@inactive'] is defined %}
+        inactive: {{ each.name }} {
+        {% else %}
+        {{ each.name }} {
+        {% endif %}
+            {% if each.timeout is defined %}
+            timeout {{ each.timeout }};
+            {% endif %}
+            {% if each.single_connection is defined %}
+            single-connection;
+            {% endif %}
+            {% if each.source_address is defined %}
+            source-address {{ each.source_address }};
+            {% endif %}
+        }
+        {% endfor %}
+        {% else %}
+        {% if configuration_system.tacplus_server.name['@inactive'] %}
+        inactive: {{ configuration_system.tacplus_server.name }} {
+        {% else %}
+        {{ configuration_system.tacplus_server.name }} {
+        {% endif %}
+            {% if configuration_system.tacplus_server.timeout is defined %}
+            timeout {{ configuration_system.tacplus_server.timeout }};
+            {% endif %}
+            {% if configuration_system.tacplus_server.single_connection is defined %}
+            single-connection;
+            {% endif %}
+            {% if configuration_system.tacplus_server.source_address is defined %}
+            source-address {{ configuration_system.tacplus_servereach.source_address }};
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_system.tacplus_options is defined %}
+    {% if configuration_system.tacplus_options['@inactive'] is defined %}
+    inactive: tacplus-options {
+    {% else %}
+    tacplus-options {
+    {% endif %}
+        {% if configuration_system.tacplus_options.exclude_cmd_attribute is defined %}
+        exclude-cmd-attribute;
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# accounting                                                                          #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.accounting is defined %}
+    {% if configuration_system.accounting['@inactive'] is defined %}
+    inactive: accounting {
+    {% else %}
+    accounting {
+    {% endif %}
+        {% if configuration_system.accounting.events is defined %}
+        {% if configuration_system.accounting.events is not mapping and configuration_system.accounting.events is not string %}
+        events [ {{ configuration_system.accounting.events|join(' ')}} ];
+        {% else %}
+        events {{ configuration_system.accounting.events }};
+        {% endif %}
+        {% endif %}
+        {% if configuration_system.accounting.destination is defined %}
+        {% if configuration_system.accounting.destination['@inactive'] is defined %}
+        inactive: destination {
+        {% else %}
+        destination {
+        {% endif %}
+            {% if configuration_system.accounting.destination.tacplus is defined %}
+            tacplus {
+                server {
+                    {% if configuration_system.accounting.destination.tacplus.server is not mapping and configuration_system.accounting.destination.tacplus.server is not string %}
+                    {% for each in configuration_system.accounting.destination.tacplus.server %}
+                    {{ each.name }} {
+                        timeout {{ each.timeout }};
+                        source-address {{ each.source_address }};
+                    }
+                    {% endfor %}
+                    {% endif %}
+                }
+            }
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# scripts                                                                             #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.scripts is defined %}
+    scripts {
+        {% if configuration_system.scripts.op is defined %}
+        op {
+            {% if configuration_system.scripts.op.file is defined %}
+            {% for each in configuration_system.scripts.op.file %}
+            {% if each.checksum is defined %}
+            file {{ each.name }} {
+                checksum sha-256 {{ each.checksum.sha_256 }};
+            }
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+        }
+        {% endif %}
+        {% if configuration_system.scripts.language is defined %}
+        language {{ configuration_system.scripts.language }};
+        {% endif %}
+        {% if configuration_system.scripts.synchronize is defined %}
+        synchronize;
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# configuration_system.service                                                        #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.services is defined %}
+    services {
+        {% if configuration_system.services.ftp is defined %}
+        ftp;
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# ssh                                                                                 #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.services.ssh is defined %}
+        ssh {
+            {% if configuration_system.services.ssh.root_login is defined %}
+            root-login allow;
+            {% endif %}
+            {% if configuration_system.services.ssh.protocol_version is defined %}
+            protocol-version {{ configuration_system.services.ssh.protocol_version }};
+            {% endif %}
+            {% if configuration_system.services.ssh.max_sessions_per_connection is defined %}
+            max-sessions-per-connection {{ configuration_system.services.ssh.max_sessions_per_connection }};
+            {% endif %}
+            {% if configuration_system.services.ssh.connection_limit is defined %}
+            connection-limit {{ configuration_system.services.ssh.connection_limit }};
+            {% endif %}
+            {% if configuration_system.services.ssh.rate_limit is defined %}
+            rate-limit {{ configuration_system.services.ssh.rate_limit }};
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# extension-service                                                                   #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.services.extension_service is defined %}
+        {% set extension_service = configuration_system.services.extension_service %}
+        extension-service {
+            {% if extension_service.request_response is defined %}
+            request-response {
+                {% if extension_service.request_response.grpc is defined %}
+                grpc {
+                    {% if extension_service.request_response.grpc.clear_text is defined %}
+                    clear-text;
+                    {% endif %}
+                    {% if extension_service.request_response.grpc.max_connections is defined %}
+                    max-connections {{ extension_service.request_response.grpc.max_connections }};
+                    {% endif %}
+                    {% if extension_service.request_response.grpc.skip_authentication is defined %}
+                    skip-authentication;
+                    {% endif %}
+                }
+                {% endif %}
+            }
+            {% endif %}
+            {% if extension_service.notification is defined %}
+            notification {
+                {% if extension_service.notification.allow_clients is defined %}
+                allow-clients {
+                    address {{ extension_service.notification.allow_clients.address }};
+                }
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# netconf                                                                             #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.services.netconf is defined %}
+        netconf {
+            {% if configuration_system.services.netconf.ssh is defined %}
+            ssh;
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# outbound_ssh                                                                                #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.services.outbound_ssh is defined %}
+        outbound-ssh {
+            {% if configuration_system.services.outbound_ssh.client is defined %}
+            {% for each in configuration_system.services.outbound_ssh.client %}
+            client {{ each.name }} {
+                device-id {{ each.device_id }};
+                secret {{ each.secret }};
+                keep-alive {
+                    retry {{ each.keep_alive.retry }};
+                    timeout {{ each.keep_alive.timeout }};
+                }
+                services {{ each.services }};
+                {% for server in each.servers %}
+                {{ server.name }} {
+                    port {{ server.port }};
+                    retry {{ server.retry }};
+                    timeout {{ server.timeout }};
+                }
+                {% endfor %}
+            }
+            {% endfor %}
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# rest                                                                                #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.services.rest is defined %}
+        rest {
+            {% if configuration_system.services.rest.http is defined %}
+            http {
+                {% if configuration_system.services.rest.http.port is defined %}
+                port {{ configuration_system.services.rest.http.port }};
+                {% endif %}
+                {% if configuration_system.services.rest.http.addresses is defined %}
+                addresses {{ configuration_system.services.rest.http.addresses }};
+                {% endif %}
+            }
+            {% endif %}
+            {% if configuration_system.services.rest.enable_explorer is defined %}
+            enable-explorer;
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# dhcp-local-server                                                                   #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.services.dhcp_local_server is defined %}
+        dhcp-local-server {
+            {% if configuration_system.services.dhcp_local_server.group is defined %}
+            {% for each in configuration_system.services.dhcp_local_server.group %}
+            group {{ each.name }} {
+                {% for iface in each.interface %}
+                interface {{ iface.name }};
+                {% endfor %}
+            }
+            {% endfor %}
+            {% endif %}
+        }
+        {% endif %}
+        {#- ---------------------------------------------------------------------------------- #}
+        {# web-management                                                                      #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_system.services.web_management is defined %}
+        web-management {
+            {% if configuration_system.services.web_management.http is defined %}
+            http {
+                {% if configuration_system.services.web_management.http.interface is defined %}
+                interface {{ configuration_system.services.web_management.http.interface }};
+                {% endif %}
+                {% if configuration_system.services.web_management.http.port is defined %}
+                port {{ configuration_system.services.web_management.http.port }};
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# host-name                                                                           #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.host_name is defined %}
+    host-name {{ configuration_system.host_name }};
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# time zone                                                                           #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.time_zone is defined %}
+    time-zone {{ configuration_system.time_zone }};
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# name server                                                                         #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.name_server is defined %}
+    name-server {
+        {% if configuration_system.name_server is not mapping and configuration_system.name_server is not string %}
+        {% for each in configuration_system.name_server %}
+        {{ each.name }};
+        {% endfor %}
+        {% else %}
+        {{ configuration_system.name_server.name }};
+        {% endif %}
+    }
+    {% endif %}
+    {#- ---------------------------------------------------------------------------------- #}
+    {# SYSLOG                                                                              #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_system.syslog is defined %}
+    syslog {
+        {% if configuration_system.syslog.user is defined %}
+        user {{ configuration_system.syslog.user.name }} {
+            {% if configuration_system.syslog.user.contents is defined %}
+            {{ configuration_system.syslog.user.contents.name }} emergency;
+            {% endif %}
+            {% if configuration_system.syslog.user.match is defined %}
+            match "{{ configuration_system.syslog.user.match }}";
+            {% endif %}
+        }
+        {% endif %}
+        {% if configuration_system.syslog.host is defined %}
+        {% for each in configuration_system.syslog.host %}
+        host {{ each.name }} {
+            {% if each.match is defined %}
+            match "{{ each.match }}";
+            {% endif %}
+            {% if each.contents.any is defined %}
+            any any;
+            {% endif %}
+            {% if each.contents.info is defined %}
+            any info;
+            {% endif %}
+            {% if each.port is defined %}
+            port {{ each.port }};
+            {% endif %}
+            {% if each.source_address is defined %}
+            source-address {{ each.source_address }};
+            {% endif %}
+            {% if each.structured_data is defined %}
+            structured-data;
+            {% endif %}
+        }
+        {% endfor %}
+        {% endif %}
+        {% if configuration_system.syslog.file is defined %}
+        {% for each in configuration_system.syslog.file %}
+        file {{ each.name }} {
+            {% if each.contents is iterable and each.contents is not mapping %}
+            {% for line in each.contents %}
+            {% if line.notice is defined %}
+            {{ line.name }} notice;
+            {% elif line.info is defined %}
+            {{ line.name }} info;
+            {% endif %}
+            {% endfor %}
+            {% else %}
+            {% if each.contents.any is defined %}
+            {{ each.contents.name }} any;
+            {% endif %}
+            {% if each.contents.info is defined %}
+            {{ each.contents.name }} info;
+            {% endif %}
+            {% if each.archive is defined %}
+            archive files {{ each.archive.files }};
+            {% endif %}
+            {% if each.match is defined %}
+            match "{{ each.match }}";
+            {% endif %}
+            {% if each.structured_data is defined %}
+            structured-data;
+            {% endif %}
+            {% endif %}
+        }
+        {% endfor %}
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_system.processes is defined %}
+    processes {
+        {% if configuration_system.processes.dhcp_service is defined %}
+        dhcp-service {
+            {% if configuration_system.processes.dhcp_service.traceoptions is defined %}
+            traceoptions {
+                {% if configuration_system.processes.dhcp_service.traceoptions.file is defined %}
+                file {{ configuration_system.processes.dhcp_service.traceoptions.file.filename }} size {{ configuration_system.processes.dhcp_service.traceoptions.file.size }};
+                {% endif %}
+                {% if configuration_system.processes.dhcp_service.traceoptions.level is defined %}
+                level {{ configuration_system.processes.dhcp_service.traceoptions.level }};
+                {% endif %}
+                {% if configuration_system.processes.dhcp_service.traceoptions.flag is defined %}
+                flag {{ configuration_system.processes.dhcp_service.traceoptions.flag.name }};
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+        {% if configuration_system.processes.app_engine_virtual_machine_management_service is defined %}
+        app-engine-virtual-machine-management-service {
+            traceoptions {
+                level notice;
+                flag all;
+            }
+        }
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_system.ntp is defined %}
+    ntp {
+        {% if configuration_system.ntp.server is defined %}
+        {% if configuration_system.ntp.server is iterable and configuration_system.ntp.server is not mapping %}
+        {% for each in configuration_system.ntp.server %}
+        server {{ each.name }};
+        {% endfor %}
+        {% else %}
+        server {{ configuration_system.ntp.server.name }};
+        {% endif %}
+        {% endif %}
+        {% if configuration_system.ntp.source_address is defined %}
+        source-address {{ configuration_system.ntp.source_address.name }};
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_system.phone_home is defined %}
+    phone-home {
+        {% if configuration_system.phone_home.rfc_compliant is defined %}
+        server {{ configuration_system.phone_home.server }};
+        {% endif %}
+        {% if configuration_system.phone_home.rfc_compliant is defined %}
+        rfc-compliant;
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_system.master_password is defined %}
+    master-password {
+        {% if configuration_system.master_password.undocumented is defined %}
+        {% if configuration_system.master_password.undocumented.password_configured is defined %}
+        password-configured;
+        {% endif %}
+        {% endif %}
+        {% if configuration_system.master_password.pseudorandom_function is defined %}
+        pseudorandom-function {{ configuration_system.master_password.pseudorandom_function }};
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_system.extensions is defined %}
+    extensions {
+        providers {
+            {% for each in configuration_system.extensions.providers %}
+            {{ each.name }} {
+                license-type {{ each.license_type.name }} deployment-scope {{ each.license_type.deployment_scope }};
+            }
+            {% endfor %}
+        }
+    }
+    {% endif %}
+}
+{% endif %}

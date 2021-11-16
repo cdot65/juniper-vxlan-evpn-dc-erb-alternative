@@ -1,0 +1,103 @@
+configuration_interfaces:
+  interface:
+    # ### PHYSICAL INTERFACES
+    - name: xe-0/0/0
+      description: "[xe-0/0/0] to austin-spine1"
+      mtu: 9216
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "10.1.0.13/31"
+
+    - name: xe-0/0/1
+      description: "[xe-0/0/1] to austin-spine2"
+      mtu: 9216
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "10.1.0.15/31"
+
+    - name: xe-0/0/11
+      description: "[xe-0/0/11] to austin-server4:eth0"
+      mtu: 9100
+      native_vlan_id: 9
+      unit:
+        - name: "0"
+          family:
+            ethernet_switching:
+              interface_mode: trunk
+              vlan:
+                members:
+                  - Linux
+
+    # ### MGMT INTERFACE
+    - name: em0
+      unit:
+        name: "0"
+        description: "out of band interface"
+        family:
+          inet:
+            address:
+              name: "{{ ansible_host }}/24"
+
+    # ### vQFX PFE INTERFACE
+    - name: em1
+      unit:
+        name: "0"
+        family:
+          inet:
+            address:
+              name: "169.254.0.2/24"
+
+    # ### IRB interfaces
+    - name: irb
+      unit:
+
+        # ### VLAN 9
+        - name: "9"
+          family:
+            inet:
+              mtu: 9000
+              address:
+                name: "10.1.9.1/24"
+              mac: "00:1c:73:00:00:01"
+
+        # ### VLAN 10
+        - name: "10"
+          family:
+            inet:
+              mtu: 9000
+              address:
+                name: "10.1.10.1/24"
+              mac: "00:1c:73:00:00:01"
+
+        # ### VLAN 11
+        - name: "11"
+          family:
+            inet:
+              mtu: 9000
+              address:
+                name: "10.1.11.1/24"
+              mac: "00:1c:73:00:00:01"
+
+    # ### LOOPBACK INTERFACES
+    - name: lo0
+      unit:
+
+        - name: "0"
+          description: "loopback0 interface"
+          family:
+            inet:
+              address:
+                name: "{{ device.loopback0.ipv4 }}/32"
+
+        - name: "1"
+          description: "overlay loopback0 interface"
+          family:
+            inet:
+              address:
+                name: "{{ device.loopback1.ipv4 }}/32"

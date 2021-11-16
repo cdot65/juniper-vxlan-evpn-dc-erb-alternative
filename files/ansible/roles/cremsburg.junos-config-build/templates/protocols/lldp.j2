@@ -1,0 +1,61 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# lldp                                                                                #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.lldp is defined %}
+    lldp {
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# port-id-subtype                                                                     #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.lldp.port_id_subtype is defined %}
+        port-id-subtype {{ configuration_protocols.lldp.port_id_subtype }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# port-id-subtype                                                                     #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.lldp.port_description_type is defined %}
+        port-description-type interface-alias;
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# neighbour_port_info_display                                                         #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.lldp.neighbour_port_info_display is defined %}
+        neighbour-port-info-display {{ configuration_protocols.lldp.neighbour_port_info_display }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# lldp interfaces                                                                     #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.lldp.interface is defined %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# multiple lldp interfaces                                                            #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.lldp.interface is not mapping and configuration_protocols.lldp.interface is not string %}
+                {% for each in configuration_protocols.lldp.interface %}
+                    {% if each.disable is defined %}
+        interface {{ each.name }} {
+            disable;
+        }
+                    {% else %}
+        interface {{ each.name }};
+                    {% endif %}
+                {% endfor %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# single lldp interfaces                                                              #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% else %}
+                {% if configuration_protocols.lldp.interface.disable is defined %}
+        interface {{ configuration_protocols.lldp.interface.name }} {
+            disable;
+        }
+                {% else %}
+        interface {{ configuration_protocols.lldp.interface.name }};
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    }
+    {% endif %}

@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "event-options"
+  template:
+    src: "junos_event_options.j2"
+    dest: "{{ build_directory }}/150_event_options.part.conf"

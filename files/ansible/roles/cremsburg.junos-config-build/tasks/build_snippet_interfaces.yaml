@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "interfaces"
+  template:
+    src: "junos_interfaces.j2"
+    dest: "{{ build_directory }}/080_interfaces.part.conf"

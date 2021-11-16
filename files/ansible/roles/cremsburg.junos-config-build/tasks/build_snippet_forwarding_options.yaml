@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "forwarding-options"
+  template:
+    src: "junos_forwarding_options.j2"
+    dest: "{{ build_directory }}/100_forwarding_options.part.conf"

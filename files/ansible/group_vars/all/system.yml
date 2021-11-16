@@ -1,0 +1,96 @@
+configuration_system:
+  host_name: "{{ inventory_hostname }}"
+  login:
+    user:
+      # ### USERNAMES
+      - name: automation
+        authentication:
+          encrypted_password: "$6$7IbSy0mn$knLsKYMNokD56FgBfqolJPUpNpd/D.UWPmQ3Ri3.rD6Ln8GryrGhvYvYltdUHzOPv0oPJCiISKkMbig7k2.tu1"
+          ssh_rsa: 
+            name: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD1De69wdroGSXggNDiuPAn1zCOtdZVbB3Rr1gNH94M1G6DrBptUDxZ5KfXZOa9WImsJv4Or2jJtzautBXXbqPB/jy+VLuDCOcoXYe/5Cp7wtfDMC9UWd3+GgO7KTu71u7QAsh277LLGlOoIo1s5NV+Bi7K2N4UGu+07lt4osS2KDLd+XECQ3pUhmlV4KJrm5PwZXYLDxUzF1toWb4bQ2gG/gpQJm8dhq/lClInz08EeX0uLrhEQvd5thzTBWn/y6WBJV0S7zf/0SvExlzJl+34Bv2Djm+wQkOyjwSatK6L9iTN2ZcGYDgHw2LyZLEGgLKeuxKFTb9jHeNWpQoFuUYPpo61wzuElh8jPU8e2XAU7EU/QbWT+wTX2WEVCMs8fkbyuL87VPi5s2fdP7cAv1RbFcVrhB8nXLPvDE79mob+U0dUlZIISuVlPHddVchv3dqJTFpe102B+P9DOkhBMjHUoYowSbNxOjkOX61nr8G+83mcqQa7gHPs3a8QHtyi8MGCXCGv+NBDkUj812SiVQ7G1bvU7pqjT4ugQTSOgD6BPh+Gx+ek+qdZ5eCz4BCLEkaXaZkgX/3Ff5qUQiZizmKTaRBWsavxLkSvi1z1WiqmZmPVZXwH8CMr5+VEAMwJfKxHIzE3aRDzd5nsCJkrKF39BigpcNflTwyOYIbeOAsIHw== roark"
+        class: super-user
+        uid: "2001"
+
+      - name: ansible
+        authentication:
+          encrypted_password: "$6$Pq0wWmCv$Ak6TYNKUtNnQJ0hv7qSNOJ4LqCUzSYnLG.8aYdFdYnJOMWMRlfwyPb/7CCFY.6dM9Vy/tC/81TusP.jq6tP20."
+        class: super-user
+        uid: "2003"
+
+  name_server:
+    - name: 192.168.101.11
+    - name: 192.168.101.12
+
+  root_authentication:
+    encrypted_password: "$6$ASywwxZD$1Q0jQmXXoadW8RJgTAhe80H.PTsWwEOFWxQzuc5b3gmkCeaTs9xF1aCtgVgphPQTkxsXYYgkj1FxgaRtvYWoV."
+    ssh_rsa: 
+      name: "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQD1De69wdroGSXggNDiuPAn1zCOtdZVbB3Rr1gNH94M1G6DrBptUDxZ5KfXZOa9WImsJv4Or2jJtzautBXXbqPB/jy+VLuDCOcoXYe/5Cp7wtfDMC9UWd3+GgO7KTu71u7QAsh277LLGlOoIo1s5NV+Bi7K2N4UGu+07lt4osS2KDLd+XECQ3pUhmlV4KJrm5PwZXYLDxUzF1toWb4bQ2gG/gpQJm8dhq/lClInz08EeX0uLrhEQvd5thzTBWn/y6WBJV0S7zf/0SvExlzJl+34Bv2Djm+wQkOyjwSatK6L9iTN2ZcGYDgHw2LyZLEGgLKeuxKFTb9jHeNWpQoFuUYPpo61wzuElh8jPU8e2XAU7EU/QbWT+wTX2WEVCMs8fkbyuL87VPi5s2fdP7cAv1RbFcVrhB8nXLPvDE79mob+U0dUlZIISuVlPHddVchv3dqJTFpe102B+P9DOkhBMjHUoYowSbNxOjkOX61nr8G+83mcqQa7gHPs3a8QHtyi8MGCXCGv+NBDkUj812SiVQ7G1bvU7pqjT4ugQTSOgD6BPh+Gx+ek+qdZ5eCz4BCLEkaXaZkgX/3Ff5qUQiZizmKTaRBWsavxLkSvi1z1WiqmZmPVZXwH8CMr5+VEAMwJfKxHIzE3aRDzd5nsCJkrKF39BigpcNflTwyOYIbeOAsIHw== roark"
+
+  services:
+    extension_service:
+      request_response:
+        grpc:
+          clear_text: null
+          max_connections: 30
+          skip_authentication: null
+      notification:
+        allow_clients:
+          address: "0.0.0.0/0"
+    netconf:
+      ssh: null
+    # rest:
+    #   enable_explorer: null
+    #   http:
+    #     port: "8080"
+    ssh:
+      root_login: allow
+
+  syslog:
+    file:
+      # ### SYSLOG MESSAGES FILE "show log messages"
+      - name: messages
+        contents:
+          - name: any
+            notice: null
+          - name: authorization
+            info: null
+
+      # ### SYSLOG COMMAND HISTORY FILE "show log interactive-commands"
+      - name: interactive-commands
+        contents:
+          any: null
+          name: interactive-commands
+
+      # ### SYSLOG LOG DEFAULT MESSAGES (structured data format) "show log default-log-messages"
+      - name: default-log-messages
+        match: "(requested 'commit' operation)|(requested 'commit synchronize' operation)|(copying configuration to juniper.save)|(commit complete)|ifAdminStatus|(FRU power)|(FRU removal)|(FRU insertion)|(link UP)|transitioned|Transferred|transfer-file|(license add)|(license delete)|(package -X update)|(package -X delete)|(FRU Online)|(FRU Offline)|(plugged in)|(unplugged)|GRES"
+        contents:
+          info: null
+          name: any
+        structured_data: null
+
+    # ### SYSLOG SERVERS
+    host:
+      - name: 192.168.105.80
+        contents:
+          any: null
+          name: any
+        port: 5514
+        source_address: "{{ ansible_host }}"
+        structured_data: null
+
+      - name: 192.168.105.77
+        contents:
+          any: null
+          name: any
+        port: 514
+        source_address: "{{ ansible_host }}"
+        structured_data: null
+
+    user:
+      contents:
+        emergency: null
+        name: any
+      name: "*"
+      # match: "!(.*Scheduler Oinker*.|.*Frame 0*.|.*ms without yielding*.)"
+  time_zone: America/Chicago

@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "firewall"
+  template:
+    src: "junos_firewall.j2"
+    dest: "{{ build_directory }}/160_firewall.part.conf"

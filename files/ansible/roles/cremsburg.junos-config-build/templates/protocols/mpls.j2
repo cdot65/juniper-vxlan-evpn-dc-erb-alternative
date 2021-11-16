@@ -1,0 +1,22 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# mpls                                                                                #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.mpls is defined %}
+        {% if configuration_protocols.mpls['@inactive'] is defined %}
+    inactive: mpls {
+        {% else %}
+    mpls {
+        {% endif %}
+        {% if configuration_protocols.mpls.interface is defined %}
+            {% for each in configuration_protocols.mpls.interface %}
+                {% if each.disable is defined %}
+        interface {{ each.name }} {
+            disable;
+        }
+                {% else %}
+        interface {{ each.name }};
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    }
+    {% endif %}

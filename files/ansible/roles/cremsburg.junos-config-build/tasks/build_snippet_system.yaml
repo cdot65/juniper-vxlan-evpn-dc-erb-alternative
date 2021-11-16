@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "system"
+  template:
+    src: "junos_system.j2"
+    dest: "{{ build_directory }}/040_system.part.conf"

@@ -1,0 +1,11 @@
+    {#- ---------------------------------------------------------------------------------- #}
+    {# Junos Configuration stanza for "vtep-source-interface"                              #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% set vtep = configuration_switch_options.vtep_source_interface %}
+    {% if vtep is defined %}
+        {% if vtep['@inactive'] is defined %}
+    inactive: vtep-source-interface {{ vtep.interface_name }};
+        {% else %}
+    vtep-source-interface {{ vtep.interface_name }};
+        {% endif %}
+    {% endif %}

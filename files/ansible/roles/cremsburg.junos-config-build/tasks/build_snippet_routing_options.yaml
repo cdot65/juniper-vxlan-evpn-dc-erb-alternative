@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "routing-options"
+  template:
+    src: "junos_routing_options.j2"
+    dest: "{{ build_directory }}/120_routing_options.part.conf"

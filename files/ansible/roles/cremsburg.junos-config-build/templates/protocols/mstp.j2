@@ -1,0 +1,101 @@
+
+    {# ----------------------------------------------------------------------------------- #}
+    {# mstp                                                                                #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.mstp is defined %}
+    mstp {
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# configuration-name                                                                  #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.mstp.configuration_name is defined %}
+        configuration-name {{ configuration_protocols.mstp.configuration_name }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# bridge-priority                                                                     #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.mstp.bridge_priority is defined %}
+        bridge-priority {{ configuration_protocols.mstp.bridge_priority }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# multiple interfaces                                                                 #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.mstp.interface is not mapping and configuration_protocols.mstp.interface is not string %}
+            {% for each in configuration_protocols.mstp.interface %}
+        interface {{ each.name }} {
+                {% if each.mode is defined %}
+            mode {{ each.mode }};
+                {% endif %}
+                {% if each.edge is defined %}
+            edge;
+                {% endif %}
+        }
+            {% endfor %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# single interfaces                                                                   #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% else %}
+        interface {{ configuration_protocols.mstp.interface.name }} {
+            {% if configuration_protocols.mstp.interface.mode is defined %}
+            mode {{ configuration_protocols.mstp.interface.mode }};
+            {% endif %}
+            {% if configuration_protocols.mstp.interface.edge is defined %}
+            edge;
+            {% endif %}
+        }
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# msti instances                                                                      #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.mstp.msti is defined %}
+        msti {{ configuration_protocols.mstp.msti.name }} {
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# bridge-priority                                                                     #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.mstp.msti.bridge_priority is defined %}
+            bridge-priority {{ configuration_protocols.mstp.msti.bridge_priority }};
+            {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# vlan                                                                                #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.mstp.msti.vlan is defined %}
+            vlan {{ configuration_protocols.mstp.msti.vlan }};
+            {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# interfaces                                                                          #}
+            {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.mstp.msti.interface is defined %}
+        
+                {# ----------------------------------------------------------------------------------- #}
+                {# multiple interface                                                                  #}
+                {# ---------------------------------------------------------------------------------- -#}
+                {% if configuration_protocols.mstp.msti.interface is not mapping and configuration_protocols.mstp.msti.interface is not string %}
+                    {% for each in configuration_protocols.mstp.msti.interface %}
+            interface {{ each.name }} {
+                        {% if each.cost is defined %}
+                cost {{ each.cost }};
+                        {% endif %}
+            }
+                    {% endfor %}
+                {# ----------------------------------------------------------------------------------- #}
+                {# single interface                                                                    #}
+                {# ---------------------------------------------------------------------------------- -#}
+                {% else %}
+            interface {{ configuration_protocols.mstp.msti.interface.name }} {
+                    {% if configuration_protocols.mstp.msti.interface.cost is defined %}
+                cost {{ configuration_protocols.mstp.msti.interface.cost }};
+                    {% endif %}
+            }
+                {% endif %}
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}

@@ -1,0 +1,21 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# rib-groups                                                                          #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.rib_groups is defined %}
+        {% if configuration_routing_options.rib_groups['@inactive'] is defined %}
+    inactive: rib-groups {
+        {% else %}
+    rib-groups {
+        {% endif %}
+        {{ configuration_routing_options.rib_groups.name }} {
+        {% if configuration_routing_options.rib_groups.import_rib is not mapping and configuration_routing_options.rib_groups.import_rib is not string %}
+            import-rib [ {{ configuration_routing_options.rib_groups.import_rib|join(' ') }} ];
+        {% else %}
+            import-rib {{ configuration_routing_options.rib_groups.import_rib }};
+        {% endif %}
+        {% if configuration_routing_options.rib_groups.import_policy is defined %}
+            import-policy {{ configuration_routing_options.rib_groups.import_policy }};
+        {% endif %}
+        }
+    }
+    {% endif %}

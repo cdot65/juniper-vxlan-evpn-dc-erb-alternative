@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "protocols"
+  template:
+    src: "junos_protocols.j2"
+    dest: "{{ build_directory }}/130_protocols.part.conf"

@@ -1,0 +1,240 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# policy-options                                                                      #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_policy_options is defined %}
+policy-options {
+    {# ----------------------------------------------- #}
+    {# policy-options.commient                         #}
+    {# ----------------------------------------------- #}
+    {% if configuration_policy_options.comment is defined %}
+    {{ configuration_policy_options.comment }};
+    {% endif %}
+    {# ----------------------------------------------- #}
+    {# policy-options.prefix-lists                     #}
+    {# ----------------------------------------------- #}
+    {% if configuration_policy_options.prefix_list is defined %}
+    {% for each in configuration_policy_options.prefix_list %}
+    prefix-list {{ each.name }} {
+        {# ----------------------------------------------- #}
+        {# policy-options.prefix-items                     #}
+        {# ----------------------------------------------- #}
+        {% if each.prefix_list_item is defined %}
+        {% for item in each.prefix_list_item %}
+        {% if item.exact is defined %}
+        {{ item.name }} exact;
+        {% else %}
+        {{ item.name }};
+        {% endif %}
+        {% endfor %}
+        {% endif %}
+        {# ----------------------------------------------- #}
+        {# policy-options.apply-path                       #}
+        {# ----------------------------------------------- #}
+        {% if each.apply_path is defined %}
+        apply-path "{{ each.apply_path }}";
+        {% endif %}
+    }
+    {% endfor %}
+    {% endif %}
+    {# ----------------------------------------------- #}
+    {# policy-options.policy-statements                #}
+    {# ----------------------------------------------- #}
+    {% if configuration_policy_options.policy_statement is defined %}
+    {% set list_of_policies = configuration_policy_options.policy_statement %}
+    {% for each in list_of_policies %}
+    policy-statement {{ each.name }} {
+        {% if each.term is defined %}
+        {% for each_term in each.term %}
+        term {{ each_term.name }} {
+            {% if each_term.from is defined %}
+            {# ------------------------------------------------------ #}
+            {# from policy                                            #}
+            {# ------------------------------------------------------ #}
+            {% if each_term.from.policy is defined %}
+            {% if each_term.from.policy|length > 1 %}
+            {% for item in each_term.from.policy %}
+            from policy [ {{ item|join(' ') }} ];
+            {% endfor %}
+            {% else %}
+            {% for item in each_term.from.policy %}
+            from policy {{ item }};
+            {% endfor %}
+            {% endif %}
+            {% else %}
+            from {
+                {# ----------------------------------------------- #}
+                {# from family                                     #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.protocol is defined %}
+                {% if each_term.from.protocol|length > 1 %}
+                {% for item in each_term.from.protocol %}
+                family [ {{ item|join(' ') }} ];
+                {% endfor %}
+                {% else %}
+                {% for item in each_term.from.family %}
+                family {{ item }};
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+                {# ----------------------------------------------- #}
+                {# from protocol                                   #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.protocol is defined %}
+                {% if each_term.from.protocol|length > 1 %}
+                {% for item in each_term.from.protocol %}
+                protocol [ {{ item|join(' ') }} ];
+                {% endfor %}
+                {% else %}
+                {% for item in each_term.from.protocol %}
+                protocol {{ item }};
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+                {# ----------------------------------------------- #}
+                {# from route filter                               #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.route_filter is defined %}
+                {% for item in each_term.from.route_filter %}
+                {% if item.exact is defined %}
+                route-filter {{ item.address }} exact;
+                {% elif item.orlonger is defined %}
+                route-filter {{ item.address }} orlonger;
+                {% else %}
+                route-filter {{ item.address }}
+                {% endif %}
+                {% endfor %}
+                {% endif %}
+                {# ----------------------------------------------- #}
+                {# from interface                                  #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.interface is defined %}
+                {% if each_term.from.interface|length > 1 %}
+                {% for item in each_term.from.interface %}
+                interface [ {{ item|join(' ') }} ];
+                {% endfor %}
+                {% else %}
+                {% for item in each_term.from.interface %}
+                interface {{ item }};
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+                {# ----------------------------------------------- #}
+                {# from community                                  #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.community is defined %}
+                {% if each_term.from.community|length > 1 %}
+                {% for item in each_term.from.community %}
+                community [ {{ item|join(' ') }} ];
+                {% endfor %}
+                {% else %}
+                {% for item in each_term.from.community %}
+                community {{ item }};
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+                {# ----------------------------------------------- #}
+                {# from rib                                        #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.rib is defined %}
+                {% if each_term.from.rib|length > 1 %}
+                {% for item in each_term.from.rib %}
+                rib [ {{ item|join(' ') }} ];
+                {% endfor %}
+                {% else %}
+                {% for item in each_term.from.rib %}
+                rib {{ item }};
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+                {# ----------------------------------------------- #}
+                {# from prefix_list                                #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.prefix_list is defined %}
+                {% if each_term.from.prefix_list|length > 1 %}
+                {% for item in each_term.from.prefix_list %}
+                prefix-list [ {{ item|join(' ') }} ];
+                {% endfor %}
+                {% else %}
+                {% for item in each_term.from.prefix_list %}
+                prefix-list {{ item }};
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+                {# ----------------------------------------------- #}
+                {# from route type                                 #}
+                {# ----------------------------------------------- #}
+                {% if each_term.from.route_type is defined %}
+                {% if each_term.from.route_type|length > 1 %}
+                {% for item in each_term.from.route_type %}
+                route-type [ {{ item|join(' ') }} ];
+                {% endfor %}
+                {% else %}
+                {% for item in each_term.from.route_type %}
+                route-type {{ item }};
+                {% endfor %}
+                {% endif %}
+                {% endif %}
+            }
+            {% endif %}
+            {% endif %}
+            {# ------------------------------------------------------ #}
+            {# policy-options.policy-statements.term.then             #}
+            {# ------------------------------------------------------ #}
+            {% if each_term.then is defined %}
+            {% if each_term.then.accept is defined %}
+            {# ----------------------------------------------------------- #}
+            {# policy-options.policy-statements.term.then.accept.community #}
+            {# ----------------------------------------------------------- #}
+            {% if each_term.then.community is defined %}
+            then {
+                {% for item in each_term.then.community %}
+                community add {{ item.community_name }};
+                {% endfor %}
+                accept;
+            }
+            {% else %}
+            then accept;
+            {% endif %}
+            {# ------------------------------------------------------- #}
+            {# policy-options.policy-statements.term.then.discard      #}
+            {# ------------------------------------------------------- #}
+            {% elif each_term.then.discard is defined %}
+            then discard;
+            {% elif each_term.then.reject is defined %}
+            then reject;
+            {# ------------------------------------------------------------ #}
+            {# policy-options.policy-statements.term.then.load_balance      #}
+            {# ------------------------------------------------------------ #}
+            {% elif each_term.then.load_balance is defined %}
+            then {
+                load-balance per-packet;
+                accept;
+            }
+            {# ------------------------------------------------------------ #}
+            {# policy-options.policy-statements.term.then.next_hop          #}
+            {# ------------------------------------------------------------ #}
+            {% elif each_term.then.next_hop is defined %}
+            then {
+                {% if each_term.then.next_hop.self is defined %}
+                next-hop self;
+                {% endif %}
+            }
+            {% endif %}
+            {% endif %}
+        }
+        {% endfor %}
+        {% endif %}
+    }
+    {% endfor %}
+    {% endif %}
+    {# ------------------------------------------------------------ #}
+    {# policy-options.policy-statements.community                   #}
+    {# ------------------------------------------------------------ #}
+    {% if configuration_policy_options.community is defined %}
+    {% for each in configuration_policy_options.community %}
+    community {{ each.name }} members {{ each.members }};
+    {% endfor %}
+    {% endif %}
+}
+{% endif %}

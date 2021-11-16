@@ -1,0 +1,11 @@
+    {% if configuration_chassis.disk_partition is defined %}
+    disk-partition {{ configuration_chassis.disk_partition.name }} {
+        {% if configuration_chassis.disk_partition.level is defined %}
+            {% for each in configuration_chassis.disk_partition.level %}
+        level {{ each.name }} {
+            free-space {{ each.free_space.thres_free }} percent;
+        }
+            {% endfor %}
+        {% endif %}
+    }
+    {% endif %}

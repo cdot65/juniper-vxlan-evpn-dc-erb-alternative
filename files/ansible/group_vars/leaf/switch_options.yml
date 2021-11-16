@@ -1,0 +1,12 @@
+configuration_switch_options:
+
+#   vrf_import:
+#     - IMPORT_GLOBAL
+
+  vtep_source_interface:
+    interface_name: "lo0.0"
+
+  route_distinguisher:
+    rd_type: "{{ device.loopback0.ipv4 }}:65534"
+
+  vrf_target: target:100:100

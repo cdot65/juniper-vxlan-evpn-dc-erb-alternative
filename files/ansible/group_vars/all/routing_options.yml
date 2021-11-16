@@ -1,0 +1,36 @@
+configuration_routing_options:
+  router_id: "{{ device.loopback0.ipv4 }}"
+
+  autonomous_system:
+    as_number: "{{ device.autonomous_system }}"
+
+  forwarding_table:
+    export: 
+      - "PFE-LB"
+    ecmp_fast_reroute: 
+      - null
+    chained_composite_next_hop: null
+
+  # ### STATIC ROUTES
+  static:
+    route:
+      - name: 10.9.0.0/17
+        next_hop:
+          - 192.168.105.1
+        no_readvertise: null
+      - name: 192.168.101.0/24
+        next_hop:
+          - 192.168.105.1
+        no_readvertise: null
+      - name: 192.168.102.0/24
+        next_hop:
+          - 192.168.105.1
+        no_readvertise: null
+      - name: 192.168.103.0/24
+        next_hop:
+          - 192.168.105.1
+        no_readvertise: null
+      - name: 192.168.104.0/24
+        next_hop:
+          - 192.168.105.1
+        no_readvertise: null

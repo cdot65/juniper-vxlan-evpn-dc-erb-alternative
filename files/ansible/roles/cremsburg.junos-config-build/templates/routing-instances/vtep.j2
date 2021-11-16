@@ -1,0 +1,6 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# vxlan vtep                                                                          #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.vtep_source_interface is defined %}
+        vtep-source-interface {{ each.vtep_source_interface.interface_name }};
+        {% endif %}

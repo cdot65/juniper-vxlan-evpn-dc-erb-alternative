@@ -1,0 +1,11 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "access"                                             #}
+{# ------------------------------------------------------------------------------------#}
+{% if configuration_access is defined %}
+access {
+
+{% include './access/address-assignment.j2' %}
+
+}
+{% endif %}

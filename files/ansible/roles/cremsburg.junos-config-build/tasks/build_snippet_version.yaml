@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "version"
+  template:
+    src: "junos_version.j2"
+    dest: "{{ build_directory }}/010_version.part.conf"

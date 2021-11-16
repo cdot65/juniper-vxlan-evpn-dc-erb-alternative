@@ -1,0 +1,22 @@
+configuration_vlans:
+  vlan:
+    - name: Linux
+      description: "Linux network"
+      l3_interface: irb.9
+      vlan_id: "9"
+      vxlan:
+        vni: 10009
+
+    - name: Windows
+      description: "Windows network"
+      l3_interface: irb.10
+      vlan_id: "10"
+      vxlan:
+        vni: 10010
+
+    - name: VMware
+      description: "VMware network"
+      l3_interface: irb.11
+      vlan_id: "11"
+      vxlan:
+        vni: 10011

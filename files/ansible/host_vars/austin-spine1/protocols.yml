@@ -1,0 +1,103 @@
+configuration_protocols:
+  bgp:
+    log_updown: null
+    graceful_restart: null
+    multipath: null
+    group:
+      # ### UNDERLAY
+      - name: "UNDERLAY"
+        export: "( BGP-AOS-Policy || DEFAULT_DENY )"
+        type: external
+        # family:
+        #   inet:
+        #     unicast: null
+        neighbor:
+          - name: "10.1.0.1"
+            description: "underlay: austin-leaf1"
+            local_address: "10.1.0.0"
+            family:
+              inet:
+                unicast: null
+            peer_as: 65011
+
+          - name: "10.1.0.5"
+            description: "underlay: austin-leaf2"
+            local_address: "10.1.0.4"
+            family:
+              inet:
+                unicast: null
+            peer_as: 65012
+
+          - name: "10.1.0.9"
+            description: "underlay: austin-leaf3"
+            local_address: "10.1.0.8"
+            family:
+              inet:
+                unicast: null
+            peer_as: 65013
+
+          - name: "10.1.0.13"
+            description: "underlay: austin-leaf4"
+            local_address: "10.1.0.12"
+            family:
+              inet:
+                unicast: null
+            peer_as: 65014
+
+        multipath:
+          multiple_as: null
+
+      # ### OVERLAY
+      - name: "OVERLAY"
+        type: external
+        multihop:
+          ttl: 1
+          no_nexthop_change: null
+        family:
+          evpn:
+            signaling: null
+            loops: 2
+        multipath:
+          multiple_as: null
+        neighbor:
+
+          - name: "10.1.1.11"
+            peer_as: 65011
+            description: "overlay: austin-leaf1"
+            local_address: "{{ device.loopback0.ipv4 }}"
+            family:
+              evpn:
+                signaling: null
+
+          - name: "10.1.1.12"
+            peer_as: 65012
+            description: "overlay: austin-leaf2"
+            local_address: "{{ device.loopback0.ipv4 }}"
+            family:
+              evpn:
+                signaling: null
+
+          - name: "10.1.1.13"
+            peer_as: 65013
+            description: "overlay: austin-leaf3"
+            local_address: "{{ device.loopback0.ipv4 }}"
+            family:
+              evpn:
+                signaling: null
+
+          - name: "10.1.1.14"
+            peer_as: 65014
+            description: "overlay: austin-leaf4"
+            local_address: "{{ device.loopback0.ipv4 }}"
+            family:
+              evpn:
+                signaling: null
+
+  lldp:
+    interface:
+      - name: all
+      - name: em0
+        disable: null
+    port_description_type: interface-alias
+    port_id_subtype: interface-name
+    neighbour_port_info_display: port-id

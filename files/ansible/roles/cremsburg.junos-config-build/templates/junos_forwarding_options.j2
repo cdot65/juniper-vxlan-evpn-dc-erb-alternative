@@ -1,0 +1,42 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "forwarding-options"                                 #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_forwarding_options is defined %}
+forwarding-options {
+    {% if configuration_forwarding_options.storm_control_profiles is defined %}
+    storm-control-profiles {{ configuration_forwarding_options.storm_control_profiles.name }} {
+        {% if configuration_forwarding_options.storm_control_profiles.all is defined %}
+        all;
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_forwarding_options.dhcp_relay is defined %}
+    dhcp-relay {
+        {% if configuration_forwarding_options.dhcp_relay.server_group is defined %}
+        server-group {
+            {% for each in configuration_forwarding_options.dhcp_relay.server_group.server_group %}
+            {{ each.name }} {
+                {% for address in each.address %}
+                {{ address.name }};
+                {% endfor %}
+            }
+            {% endfor %}
+        }
+        {% endif %}
+        {% if configuration_forwarding_options.dhcp_relay.active_server_group is defined %}
+        active-server-group {{ configuration_forwarding_options.dhcp_relay.active_server_group.active_server_group }};
+        {% endif %}
+        {% if configuration_forwarding_options.dhcp_relay.group is defined %}
+        {% for each in configuration_forwarding_options.dhcp_relay.group %}
+        group {{ each.name }} {
+            {% for iface in each.interface %}
+            interface {{ iface.name }};
+            {% endfor %}
+        }
+        {% endfor %}
+        {% endif %}
+    }
+    {% endif %}
+}
+{% endif %}

@@ -1,0 +1,21 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# rpd-server                                                                          #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.undocumented is defined %}
+        {% if configuration_routing_options.undocumented.rpd_server is defined %}
+            {% if configuration_routing_options.undocumented.rpd_server['@inactive'] is defined %}
+    inactive: rpd-server {
+            {% else %}
+    rpd-server {
+            {% endif %}
+            {% if configuration_routing_options.undocumented.rpd_server.traceoptions is defined %}
+        traceoptions {
+            file {{ configuration_routing_options.undocumented.rpd_server.traceoptions.file.filename }} size {{ configuration_routing_options.undocumented.rpd_server.traceoptions.file.size }};
+                {% for each in configuration_routing_options.undocumented.rpd_server.traceoptions.flag %}
+            flag {{ each.name }};
+                {% endfor %}
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}

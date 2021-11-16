@@ -1,0 +1,84 @@
+---
+### ---------------------------------------------------------------------------
+### VALIDATE THAT ANSIBLE CONTROL MACHINE IS RUNNING A RECENT ANSIBLE VERSION
+### ---------------------------------------------------------------------------
+- hosts: all
+  connection: local
+  gather_facts: False
+  become: False
+  roles: 
+    - { role: juniper.junos }
+    # - { role: cremsburg.junos-config-build }
+  tasks:
+    - name: print diff to screen
+      debug: msg="{{ completed_config_file }}"
+
+    - name: "### RETRIEVE CONFIGURATION ON REMOTE DEVICE ###"
+      juniper_junos_config:
+        user: "automation"
+        passwd: "juniper123"
+        retrieve: 'committed'
+        diff: false
+        check: false
+        commit: false
+        timeout: 240
+      register: committed_config
+      # when: is_diff is defined
+
+    - name: "copy completed config file to project's config directory backup purposes"
+      copy: 
+        content: "{{ committed_config.config }}"
+        dest: "{{ committed_config_file }}"
+
+    ### ------------------------------------------------------------
+    ### STRIP OUT FLUFF FROM BACKED UP CONFIGURATION
+    ### ------------------------------------------------------------
+    - name: Remove blank lines between matches
+      lineinfile:
+        path: "{{ committed_config_file }}"
+        regexp: '(^\s*$)'
+        state: absent
+
+    - name: Remove commit comment line
+      lineinfile:
+        path: "{{ committed_config_file }}"
+        regexp: '(^##.*)'
+        state: absent
+
+    - name: "### Diff the committed against the local candidate"
+      command: "diff {{ completed_config_file }} {{ committed_config_file }}"
+      failed_when: "diff.rc > 1"
+      register: diff
+
+    - name: print diff to screen
+      debug: msg="{{ diff.stdout }}"
+      when: "diff.stdout|length > 0"
+
+    - name: setting fact if there is a diff on the box
+      set_fact:
+        compliant: False
+      when: "diff.stdout|length > 0"
+
+    ### ------------------------------------------------------------
+    ### REST API WORK
+    ### ------------------------------------------------------------
+    - name: "### Clear the API's database of previous configs ###"
+      uri:
+        url: http://api-golden-config/api/
+        method: DELETE
+        status_code: 204
+      run_once: true
+
+    - name: "### Create entries into the API ###"
+      uri:
+        url: http://api-golden-config/api/
+        method: POST
+        body_format: json
+        status_code: [200, 201]
+        return_content: true
+        headers:
+          Content-Type: application/json
+        body:
+          hostname: "{{ inventory_hostname }}"
+          compliant: "{{ compliant | default(True) }}"
+          diff: "{{ diff.stdout }}"

@@ -1,0 +1,241 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "class-of-service"                                   #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_class_of_service is defined %}
+{% if configuration_class_of_service['@inactive'] is defined %}
+inactive: class-of-service {
+{% else %}
+class-of-service {
+{% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_class_of_service.classifiers                                                 #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_class_of_service.classifiers is defined %}
+    classifiers {
+        {# ----------------------------------------------------------------------------------- #}
+        {# configuration_class_of_service.classifiers.dscp                                            #}
+        {# ----------------------------------------------------------------------------------- #}
+        {% if configuration_class_of_service.classifiers.dscp is defined %}
+        dscp {{ configuration_class_of_service.classifiers.dscp.name }} {
+            {% if configuration_class_of_service.classifiers.dscp.forwarding_class is defined %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# multiple configuration_class_of_service.classifiers.dscp.forwarding_class                  #}
+            {# ----------------------------------------------------------------------------------- #}
+            {% if configuration_class_of_service.classifiers.dscp.forwarding_class is not mapping and configuration_class_of_service.classifiers.dscp.forwarding_class is not string %}
+            {% for each in configuration_class_of_service.classifiers.dscp.forwarding_class %}
+            forwarding-class {{ each.name }} {
+                {% if each.loss_priority is defined %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# multiple configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority             #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% if each.loss_priority is not mapping and each.loss_priority is not string %}
+                {% for item in each.loss_priority %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# multiple configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% if item.code_points is not mapping and item.code_points is not string %}
+                loss-priority {{ item.name }} code-points [ {{ item.code_points|join(' ') }} ];
+                {% else %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# single configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points   #}
+                {# -------------------------------------------------------------------------------------------- #}
+                loss-priority {{ item.name }} code-points {{ item.code_points }};
+                {% endif %}
+                {% endfor %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# single configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority               #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% else %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# multiple configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% if each.loss_priority.code_points is not mapping and each.loss_priority.code_points is not string %}
+                loss-priority {{ each.loss_priority.name }} code-points [ {{ each.loss_priority.code_points|join(' ') }} ];
+                {% else %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# single configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points   #}
+                {# -------------------------------------------------------------------------------------------- #}
+                loss-priority {{ each.loss_priority.name }} code-points {{ each.loss_priority.code_points }};
+                {% endif %}
+                {% endif %}
+                {% endif %}
+            }
+            {% endfor %}
+            {% else %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# single configuration_class_of_service.classifiers.dscp.forwarding_class                    #}
+            {# ----------------------------------------------------------------------------------- #}
+            forwarding-class {{ configuration_class_of_service.classifiers.dscp.forwarding_class.name }} {
+                {% if configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority is defined %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# multiple configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority             #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% if configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority is not mapping and configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority is not string %}
+                {% for item in configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# multiple configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% if item.code_points is not mapping and item.code_points is not string %}
+                loss-priority {{ item.name }} code-points [ {{ item.code_points|join(' ') }} ];
+                {% else %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# single configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points   #}
+                {# -------------------------------------------------------------------------------------------- #}
+                loss-priority {{ item.name }} code-points {{ item.code_points }};
+                {% endif %}
+                {% endfor %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# single configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority               #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% else %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# multiple configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points #}
+                {# -------------------------------------------------------------------------------------------- #}
+                {% if configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points is not mapping and configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points is not string %}
+                loss-priority {{ configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.name }} code-points [ {{ configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points|join(' ') }} ];
+                {% else %}
+                {# -------------------------------------------------------------------------------------------- #}
+                {# single configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points   #}
+                {# -------------------------------------------------------------------------------------------- #}
+                loss-priority {{ configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.name }} code-points {{ configuration_class_of_service.classifiers.dscp.forwarding_class.loss_priority.code_points }};
+                {% endif %}
+                {% endif %}
+                {% endif %}
+            }
+            {% endif %}
+            {% endif %}
+        }
+        {% endif %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# configuration_class_of_service.classifiers.exp                                             #}
+        {# ----------------------------------------------------------------------------------- #}
+        {% if configuration_class_of_service.classifiers.exp is defined %}
+        exp {{ configuration_class_of_service.classifiers.exp.name }} {
+            {% for each in configuration_class_of_service.classifiers.exp.forwarding_class %}
+            forwarding-class {{ each.name }} {
+                {% if each.loss_priority is defined %}
+                loss-priority {{ each.loss_priority.name }} code-points {{ each.loss_priority.code_points }};
+                {% endif %}
+            }
+            {% endfor %}
+        }
+        {% endif %}
+    }
+    {% endif %}
+    {% if configuration_class_of_service.tri_color is defined %}
+    tri-color;
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_class_of_service.forwarding-classes                                          #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_class_of_service.forwarding_classes is defined %}
+    forwarding-classes {
+        {% if configuration_class_of_service.forwarding_classes.class is not mapping and configuration_class_of_service.forwarding_classes.class is not string %}
+        {% for each in configuration_class_of_service.forwarding_classes.class %}
+        class {{ each.name }} queue-num {{ each.queue_num }};
+        {% endfor %}
+        {% else %}
+        class {{ configuration_class_of_service.forwarding_classes.class.name }} queue-num {{ configuration_class_of_service.forwarding_classes.class.queue_num }};
+        {% endif %}
+    }
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_class_of_service.interfaces                                                  #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_class_of_service.interfaces is defined %}
+    interfaces {
+        {% if configuration_class_of_service.interfaces.interface is not mapping and configuration_class_of_service.interfaces.interface is not string %}
+        {% for each in configuration_class_of_service.interfaces.interface %}
+        {{ each.name }} {
+            scheduler-map {{ each.scheduler_map }};
+            unit {{ each.unit.name }} {
+                classifiers {
+                    dscp {{ each.unit.classifiers.dscp.name }};
+                    exp {{ each.unit.classifiers.exp.classifier_name }};
+                }
+                rewrite-rules {
+                    dscp {{ each.unit.rewrite_rules.dscp.name }};
+                    exp {{ each.unit.rewrite_rules.exp.name }};
+                }
+            }
+        }
+        {% endfor %}
+        {% else %}
+        {{ configuration_class_of_service.interfaces.interface.name }} {
+            scheduler-map {{ configuration_class_of_service.interfaces.interface.scheduler_map }};
+            unit {{ configuration_class_of_service.interfaces.interface.unit.name }} {
+                classifiers {
+                    dscp {{ configuration_class_of_service.interfaces.interface.unit.classifiers.dscp.name }};
+                    exp {{ configuration_class_of_service.interfaces.interface.unit.classifiers.exp.classifier_name }};
+                }
+                rewrite-rules {
+                    dscp {{ configuration_class_of_service.interfaces.interface.unit.rewrite_rules.dscp.name }};
+                    exp {{ configuration_class_of_service.interfaces.interface.unit.rewrite_rules.exp.name }};
+                }
+            }
+        }
+        {% endif %}
+    }
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_class_of_service.rewrite_rules                                          #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_class_of_service.rewrite_rules is defined %}
+    rewrite-rules {
+        dscp {{ configuration_class_of_service.rewrite_rules.dscp.name }} {
+            {% for each in configuration_class_of_service.rewrite_rules.dscp.forwarding_class %}
+            forwarding-class {{ each.name }} {
+                {% if each.loss_priority is not mapping and each.loss_priority is not string %}
+                {% for item in each.loss_priority %}
+                loss-priority {{ item.name }} code-point {{ item.code_point }};
+                {% endfor %}
+                {% else %}
+                loss-priority {{ each.loss_priority.name }} code-point {{ each.loss_priority.code_point }};
+                {% endif %}
+            }
+            {% endfor %}
+        }
+        exp {{ configuration_class_of_service.rewrite_rules.exp.name }} {
+            {% for each in configuration_class_of_service.rewrite_rules.exp.forwarding_class %}
+            forwarding-class {{ each.name }} {
+                {% if each.loss_priority is not mapping and each.loss_priority is not string %}
+                {% for item in each.loss_priority %}
+                loss-priority {{ item.name }} code-point {{ item.code_point }};
+                {% endfor %}
+                {% else %}
+                loss-priority {{ each.loss_priority.name }} code-point {{ each.loss_priority.code_point }};
+                {% endif %}
+            }
+            {% endfor %}
+        }
+    }
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_class_of_service.scheduler_maps                                          #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_class_of_service.scheduler_maps is defined %}
+    scheduler-maps {
+        {{ configuration_class_of_service.scheduler_maps.name }} {
+            {% for each in configuration_class_of_service.scheduler_maps.forwarding_class %}
+            forwarding-class {{ each.name }} scheduler {{ each.scheduler }};
+            {% endfor %}
+        }
+    }
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_class_of_service.schedulers                                          #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_class_of_service.schedulers is defined %}
+    schedulers {
+        {% for each in configuration_class_of_service.schedulers %}
+        {{ each.name }} {
+            transmit-rate percent {{ each.transmit_rate.percent }};
+            buffer-size percent {{ each.buffer_size.percent }};
+            priority {{ each.priority }};
+        }
+        {% endfor %}
+    }
+    {% endif %}
+}
+{% endif %}

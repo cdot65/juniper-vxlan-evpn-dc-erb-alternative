@@ -1,0 +1,37 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "routing-options"                                    #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_routing_instances is defined %}
+routing-instances {
+    {% if configuration_routing_instances.instance is defined %}
+    {% for each in configuration_routing_instances.instance %}
+    {{ each.name }} {
+
+{% include './routing-instances/bmp.j2' %}
+
+{% include './routing-instances/description.j2' %}
+
+{% include './routing-instances/routing_options.j2' %}
+
+{% include './routing-instances/protocols.j2' %}
+
+{% include './routing-instances/vlans.j2' %}
+
+{% include './routing-instances/vtep.j2' %}
+
+{% include './routing-instances/instance_type.j2' %}
+
+{% include './routing-instances/access.j2' %}
+
+{% include './routing-instances/interface.j2' %}
+
+{% include './routing-instances/rd.j2' %}
+
+{% include './routing-instances/vrf.j2' %}
+
+    }
+    {% endfor %}
+    {% endif %}
+}
+{% endif %}

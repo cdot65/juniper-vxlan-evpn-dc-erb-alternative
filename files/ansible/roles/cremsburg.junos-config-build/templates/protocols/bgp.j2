@@ -1,0 +1,313 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# bgp                                                                                 #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.bgp is defined %}
+        {% if configuration_protocols.bgp['@inactive'] is defined %}
+    inactive: bgp {
+        {% else %}
+    bgp {
+        {% endif %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# group                                                                               #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.bgp.group is defined %}
+            {% for each in configuration_protocols.bgp.group %}
+        group {{ each.name }} {
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# advertise-inactive                                                                  #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.advertise_inactive is defined %}
+            advertise-inactive;
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# authentication-key                                                                  #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.authentication_key is defined %}
+            authentication-key {{ each.authentication_key }};
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# type                                                                                #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.type is defined %}
+            type {{ each.type }};
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# import policy                                                                       #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.import is defined %}
+                    {% if each.import is not mapping and each.import is not string %}
+            import [ {{ each.import|join(' ') }} ];
+                    {% else %}
+            import {{ each.import }};
+                    {% endif %}
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# export policy                                                                       #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.export is defined %}
+                    {% if each.export is not mapping and each.export is not string %}
+            export [ {{ each.export|join(' ') }} ];
+                    {% else %}
+            export {{ each.export }};
+                    {% endif %}
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# hold-time                                                                           #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.hold_time is defined %}
+            hold-time {{ each.hold_time }};
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# local-address                                                                       #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.local_address is defined %}
+            local-address {{ each.local_address }};
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# peer-as                                                                             #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.peer_as is defined %}
+            peer-as {{ each.peer_as }};
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# log-updown                                                                          #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.log_updown is defined %}
+            log-updown;
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# multihop                                                                            #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.multihop.no_nexthop_change is defined %}
+            multihop {
+                    {% if each.multihop.ttl is defined %}
+                ttl {{ each.multihop.ttl }};
+                    {% endif %}
+                    {% if each.multihop.no_nexthop_change is defined %}
+                no-nexthop-change;
+                    {% endif %}
+            }
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# family inet                                                                         #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.family is defined %}
+                    {% if each.family.inet is defined %}
+            family inet {
+                        {% if each.family.inet.unicast is defined %}
+                unicast;
+                        {% endif %}
+            }
+                    {% endif %}
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# family inet-vpn                                                                     #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.family.inet_vpn is defined %}
+            family inet-vpn {
+                    {% if each.family.inet_vpn.unicast is defined %}
+                unicast;
+                    {% endif %}
+                    {% if each.family.inet_vpn.any is defined %}
+                any;
+                    {% endif %}
+            }
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# family evpn                                                                         #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.family.evpn is defined %}
+            family evpn {
+                    {% if each.family.evpn.signaling is defined %}
+                        {% if each.family.evpn.loops is defined %}
+                signaling {
+                    loops {{ each.family.evpn.loops }};
+                }
+                        {% else %}
+                signaling;
+                        {% endif %}
+                    {% endif %}
+            }
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# local-as                                                                       #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.local_as is defined %}
+            local-as {{ each.local_as }};
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# multipath                                                                           #}
+            {# --------------------------------------`------------------------------------------- -#}
+                {% if each.multipath is defined %}
+                    {% if each.multipath.multiple_as is defined %}
+            multipath {
+                multiple-as;
+            }
+                    {% else %}
+            multipath;
+                    {% endif %}
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# cluster id                                                                          #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.cluster is defined %}
+            cluster {{ each.cluster }};
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# BFD                                                                                 #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.bfd_liveness_detection is defined %}
+            bfd-liveness-detection {
+                    {% if each.bfd_liveness_detection.minimum_interval is defined %}
+                minimum-interval {{ each.bfd_liveness_detection.minimum_interval }};
+                    {% endif %}
+                    {% if each.bfd_liveness_detection.multiplier is defined %}
+                multiplier {{ each.bfd_liveness_detection.multiplier }};
+                    {% endif %}
+                    {% if each.bfd_liveness_detection.session_mode is defined %}
+                session-mode {{ each.bfd_liveness_detection.session_mode }};
+                    {% endif %}
+            }
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# bgp peers                                                                           #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.neighbor is defined %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# multiple bgp peer                                                                   #}
+            {# ---------------------------------------------------------------------------------- -#}
+                    {% if each.neighbor is not mapping and each.neighbor is not string %}
+                        {% for router in each.neighbor %}
+            neighbor {{ router.name }} {
+
+                {# ----------------------------------------------------------------------------------- #}
+                {# description                                                                         #}
+                {# ---------------------------------------------------------------------------------- -#}
+                            {% if router.description is defined %}
+                description "{{ router.description }}";
+                            {% endif %}
+
+                {# ----------------------------------------------------------------------------------- #}
+                {# local-address                                                                       #}
+                {# ---------------------------------------------------------------------------------- -#}
+                            {% if router.local_address is defined %}
+                local-address {{ router.local_address }};
+                            {% endif %}
+
+                {# ----------------------------------------------------------------------------------- #}
+                {# family evpn                                                                         #}
+                {# ---------------------------------------------------------------------------------- -#}
+                            {% if router.family.evpn is defined %}
+                family evpn {
+                                {% if router.family.evpn.signaling is defined %}
+                                    {% if router.family.evpn.loops is defined %}
+                    signaling {
+                        loops {{ router.family.evpn.loops }};
+                    }
+                                    {% else %}
+                    signaling;
+                                    {% endif %}
+                                {% endif %}
+                }
+                            {% endif %}
+
+                {# ----------------------------------------------------------------------------------- #}
+                {# family inet                                                                         #}
+                {# ---------------------------------------------------------------------------------- -#}
+                            {% if router.family.inet is defined %}
+                family inet {
+                                {% if router.family.inet.unicast is defined %}
+                    unicast;
+                                {% endif %}
+                }
+                            {% endif %}
+
+                {# ----------------------------------------------------------------------------------- #}
+                {# peer-as                                                                             #}
+                {# ---------------------------------------------------------------------------------- -#}
+                            {% if router.peer_as is defined %}
+                peer-as {{ router.peer_as }};
+                            {% endif %}
+            }
+                        {% endfor %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# single bgp peer                                                                     #}
+            {# ---------------------------------------------------------------------------------- -#}
+                    {% else %}
+                        {% if each.neighbor|length > 1 %}
+            neighbor {{ each.neighbor.name }} {
+                            {% if each.neighbor.description is defined %}
+                description "{{ each.neighbor.description }}";
+                            {% endif %}
+                            {% if each.neighbor.local_address is defined %}
+                local-address {{ each.neighbor.local_address }};
+                            {% endif %}
+                            {% if each.neighbor.peer_as is defined %}
+                peer-as {{ each.neighbor.peer_as }};
+                            {% endif %}
+            }
+                        {% else %}
+            neighbor {{ each.neighbor.name }};
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+            {# ----------------------------------------------------------------------------------- #}
+            {# vpn-apply-export                                                                    #}
+            {# ---------------------------------------------------------------------------------- -#}
+                {% if each.vpn_apply_export is defined %}
+            vpn-apply-export;
+                {% endif %}
+
+        }
+            {% endfor %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# log-updown                                                                          #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.bgp.log_updown is defined %}
+        log-updown;
+            {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# graceful_restart                                                                    #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.bgp.graceful_restart is defined %}
+        graceful-restart;
+            {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# multipath                                                                           #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.bgp.multipath is defined %}
+        multipath;
+            {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# vpn-apply-export                                                                    #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% if configuration_protocols.bgp.group.vpn_apply_export is defined %}
+        vpn-apply-export;
+            {% endif %}
+        {% endif %}
+    }
+    {% endif %}

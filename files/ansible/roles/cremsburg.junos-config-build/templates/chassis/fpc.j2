@@ -1,0 +1,32 @@
+    {% if configuration_chassis.fpc is defined %}
+        {% for each in configuration_chassis.fpc %}
+    fpc {{ each.name }} {
+            {% if each.pic is defined %}
+        pic {{ each.pic.name }} {
+                {% if each.pic.tunnel_services is defined %}
+            tunnel-services {
+                bandwidth {{ each.pic.tunnel_services.bandwidth }};
+            }
+                {% endif %}
+                {% if each.pic.interface_type is defined %}
+            interface-type {{ each.pic.interface_type }};
+                {% endif %}
+        }
+            {% endif %}
+            {% if each.sampling_instance is defined %}
+        sampling-instance {{ each.sampling_instance.name }};
+            {% endif %}
+            {% if each.inline_services is defined %}
+        inline-services {
+                {% if each.inline_services.flow_table_size is defined %}
+            flow-table-size {
+                    {% if each.inline_services.flow_table_size.ipv4_flow_table_size is defined %}
+                ipv4-flow-table-size {{ each.inline_services.flow_table_size.ipv4_flow_table_size }};
+                    {% endif %}
+            }
+                {% endif %}
+        }
+            {% endif %}
+    }
+        {% endfor %}
+    {% endif %}

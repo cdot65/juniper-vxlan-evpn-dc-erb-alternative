@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "apply-groups"
+  template:
+    src: "junos_apply_groups.j2"
+    dest: "{{ build_directory }}/020_apply_groups.part.conf"

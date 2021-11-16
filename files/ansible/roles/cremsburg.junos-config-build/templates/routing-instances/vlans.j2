@@ -1,0 +1,23 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# vlans                                                                               #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.vlans is defined %}
+        vlans {
+            {% for vlan in each.vlans %}
+            {{ vlan.name }} {
+                vlan-id {{ vlan.vlan_id }};
+                {% if vlan.l3_interface is defined %}
+                l3-interface {{ vlan.l3_interface }};
+                {% endif %}
+                {% if vlan.vxlan is defined %}
+                vxlan {
+                    vni {{ vlan.vxlan.vni }};
+                    {% if vlan.vxlan.ingress_node_replication is defined %}
+                    ingress-node-replication;
+                    {% endif %}
+                }
+                {% endif %}
+            }
+            {% endfor %}
+        }
+        {% endif %}

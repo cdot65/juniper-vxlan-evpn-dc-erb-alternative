@@ -1,0 +1,18 @@
+configuration_snmp:
+  community:
+    authorization: read-only
+    clients:
+      - name: 0.0.0.0/0
+    name: healthbot
+  interface: em0.0
+  trap_group:
+    - name: healthbot
+      categories:
+        chassis: null
+        routing: null
+      targets:
+        name: 192.168.105.77
+      version: v2
+  trap_options:
+    source_address:
+      address: "{{ ansible_host }}"

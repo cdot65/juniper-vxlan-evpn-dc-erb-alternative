@@ -1,0 +1,3 @@
+configuration_device:
+  role:
+    - leaf

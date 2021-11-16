@@ -1,0 +1,28 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# ldp                                                                                 #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.ldp is defined %}
+    ldp {
+        {% if configuration_protocols.ldp.track_igp_metric is defined %}
+        track-igp-metric;
+        {% endif %}
+        {% if configuration_protocols.ldp.interface is defined %}
+            {% if configuration_protocols.ldp.interface is not mapping and configuration_protocols.ldp.interface is not string %}
+                {% for each in configuration_protocols.ldp.interface %}
+                    {% if each|length > 1 %}
+        interface {{ each.name }} {
+                        {% if each.disable is defined %}
+            disable;
+                        {% endif %}
+        }
+                    {% else %}
+        interface {{ each.name }};
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+        interface {{ configuration_protocols.ldp.interface.name }};
+            {% endif %}
+        {% endif %}
+    }
+    {% endif %}
+

@@ -1,0 +1,44 @@
+---
+### -------------------------------------------------
+### PRINT MESSAGE TO CONSOLE WITH PATH OF THIS FILE
+### -------------------------------------------------
+- name: "Manage the local directories containing configurations"
+  debug:
+    msg: "Tasks found in roles/cremsburg.junos-config-build/tasks/manage_directories.yaml"
+  run_once: true
+
+### -------------------------------------------------
+### REMOVE AND RECREATE BUILD DIRECTORY
+### -------------------------------------------------
+- name: "directory: remove directory for temporary config elements from previous run"
+  file:
+    path: "{{ build_directory }}"
+    state: absent
+
+- name: "directory: create directory for temporary config elements for this run"
+  file:
+    path: "{{ build_directory }}"
+    state: directory
+
+### -------------------------------------------------
+### DIRECTORY TO HOLD COMPLETED CONFIGURATIONS
+### -------------------------------------------------
+- name: "directory: ensure a directory exists for completed configurations"
+  file:
+    path: "{{ configuration_directory }}"
+    state: directory
+  run_once: true
+
+- name: "configuration: remove previously generated configuration for each device"
+  file:
+    path: "{{ completed_config_file }}"
+    state: absent
+
+### -------------------------------------------------
+### DIRECTORY TO HOLD BOOTSTRAP CONFIGURATIONS
+### -------------------------------------------------
+- name: "directory: ensure a directory exists for bootstrap configurations"
+  file:
+    path: "{{ bootstrap_config_dir }}"
+    state: directory
+  run_once: true

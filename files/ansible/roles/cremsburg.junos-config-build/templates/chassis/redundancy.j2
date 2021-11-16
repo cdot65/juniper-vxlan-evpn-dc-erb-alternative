@@ -1,0 +1,11 @@
+    {% if configuration_chassis.redundancy is defined %}
+        {% if configuration_chassis.redundancy['@inactive'] is defined %}
+    inactive: redundancy {
+        {% else %}
+    redundancy {
+        {% endif %}
+        {% if configuration_chassis.redundancy.graceful_switchover is defined %}
+        graceful-switchover;
+        {% endif %}
+    }
+    {% endif %}

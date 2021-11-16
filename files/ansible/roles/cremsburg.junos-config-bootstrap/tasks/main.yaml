@@ -1,0 +1,5 @@
+---
+- name: building bootstrap configuration
+  template:
+    src: "bootstrap.j2"
+    dest: "{{ bootstrap_config_file }}"

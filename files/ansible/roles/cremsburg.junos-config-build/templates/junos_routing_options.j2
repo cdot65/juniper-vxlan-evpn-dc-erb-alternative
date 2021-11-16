@@ -1,0 +1,27 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "routing-options"                                    #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_routing_options is defined %}
+routing-options {
+
+{% include './routing-options/bmp.j2' %}
+
+{% include './routing-options/rib.j2' %}
+
+{% include './routing-options/interface-routes.j2' %}
+
+{% include './routing-options/static-routes.j2' %}
+
+{% include './routing-options/rib-groups.j2' %}
+
+{% include './routing-options/router-id.j2' %}
+
+{% include './routing-options/autonomous-system.j2' %}
+
+{% include './routing-options/forwarding-table.j2' %}
+
+{% include './routing-options/rpd-server.j2' %}
+
+}
+{% endif %}

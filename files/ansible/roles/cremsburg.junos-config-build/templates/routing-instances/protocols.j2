@@ -1,0 +1,58 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# protocols                                                                           #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.protocols is defined %}
+        protocols {
+            {% if each.protocols.evpn is defined %}
+            evpn {
+
+                {#- ---------------------------------------------------------------------------------- #}
+                {# encapsulation                                                                       #}
+                {# ---------------------------------------------------------------------------------- -#}
+                {% if each.protocols.evpn.encapsulation is defined %}
+                encapsulation {{ each.protocols.evpn.encapsulation }};
+                    {% if each.protocols.evpn.extended_vni_list is defined %}
+                        {% if each.protocols.evpn.extended_vni_list|length > 1 %}
+                            {% for item in each.protocols.evpn.extended_vni_list %}
+                extended-vni-list [ {{ item|join(' ') }} ];
+                            {% endfor %}
+                        {% else %}
+                            {% for item in each.protocols.evpn.extended_vni_list %}
+                extended-vni-list {{ item }};
+                            {% endfor %}
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+
+                {#- ---------------------------------------------------------------------------------- #}
+                {# default_gateway                                                                     #}
+                {# ---------------------------------------------------------------------------------- -#}
+                {% if each.protocols.evpn.default_gateway is defined %}
+                default-gateway {{ each.protocols.evpn.default_gateway }};
+                {% endif %}
+
+                {#- ---------------------------------------------------------------------------------- #}
+                {# ip-prefix-routes                                                                    #}
+                {# ---------------------------------------------------------------------------------- -#}
+
+                {% if each.protocols.evpn.ip_prefix_routes is defined %}
+                ip-prefix-routes {
+                    {% if each.protocols.evpn.ip_prefix_routes.advertise is defined %}
+                    advertise {{ each.protocols.evpn.ip_prefix_routes.advertise }};
+                    {% endif %}
+                    {% if each.protocols.evpn.ip_prefix_routes.encapsulation is defined %}
+                    encapsulation {{ each.protocols.evpn.ip_prefix_routes.encapsulation }};
+                    {% endif %}
+                    {% if each.protocols.evpn.ip_prefix_routes.vni is defined %}
+                    vni {{ each.protocols.evpn.ip_prefix_routes.vni }};
+                    {% endif %}
+                    {% if each.protocols.evpn.ip_prefix_routes.vni is defined %}
+                    export ( BGP-AOS-Policy || DEFAULT_DENY );
+                    {% endif %}
+                }
+                {% endif %}
+
+            }
+            {% endif %}
+        }
+        {% endif %}

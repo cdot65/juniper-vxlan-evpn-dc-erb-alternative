@@ -1,0 +1,11 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "services"                                           #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_services is defined %}
+services {
+    {% if configuration_services.application_identification is defined %}
+    application-identification;
+    {% endif %}
+}
+{% endif %}

@@ -1,0 +1,15 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "switch-options"                                     #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_switch_options is defined %}
+switch-options {
+
+{% include './switch-options/vtep-source-interface.j2' %}
+
+{% include './switch-options/route-distinguisher.j2' %}
+
+{% include './switch-options/vrf.j2' %}
+
+}
+{% endif %}

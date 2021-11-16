@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "snmp"
+  template:
+    src: "junos_snmp.j2"
+    dest: "{{ build_directory }}/090_snmp.part.conf"

@@ -1,0 +1,8 @@
+device:
+  role:
+    - leaf
+  loopback0: 
+    ipv4: 10.1.1.13
+  loopback1: 
+    ipv4: 10.1.2.13
+  autonomous_system: 65013

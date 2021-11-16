@@ -1,0 +1,24 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "event-options"                                      #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_event_options is defined %}
+event-options {
+    {% for each in configuration_event_options.policy %}
+    policy {{ each.name }} {
+        events [ {{ each.events|join(' ') }} ];
+        then {
+            event-script {{ each.then.event_script.name }};
+        }
+    }
+    {% endfor %}
+    event-script {
+        {% for each in configuration_event_options.event_script.file %}
+        file {{ each.name }} {
+            python-script-user {{ each.python_script_user }};
+            checksum sha-256 {{ each.checksum.sha_256 }};
+        }
+        {% endfor %}
+    }
+}
+{% endif %}

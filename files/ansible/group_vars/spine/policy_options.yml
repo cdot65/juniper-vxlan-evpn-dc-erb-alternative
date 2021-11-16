@@ -1,0 +1,45 @@
+configuration_policy_options:
+  policy_statement:
+    - name: AllPodNetworks
+      term:
+        - name: AllPodNetworks-10
+          from:
+            family:
+              - inet
+            protocol: 
+              - direct
+            # route_filter:
+            #   - address: "{{ device.loopback0.ipv4 }}/32"
+            #     exact: null
+          then:
+            accept: null
+
+    - name: BGP-AOS-Policy
+      term:
+        - name: BGP-AOS-Policy-10
+          from:
+            policy:
+              - AllPodNetworks
+          then:
+            accept: null
+
+        - name: BGP-AOS-Policy-30
+          then:
+            accept: null
+
+    - name: DEFAULT_DENY
+      term:
+        - name: DEFAULT_DENY-10
+          then:
+            reject: null
+
+    - name: PFE-LB
+      term:
+        - name: LOAD_BALANCE
+          then:
+            load_balance: 
+              per-packet: null
+
+  # community:
+  #   - name: COMMUNITY_GLOBAL
+  #     members: target:65000:1111

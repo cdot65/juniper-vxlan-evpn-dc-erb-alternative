@@ -1,0 +1,95 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# isis                                                                                #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.isis is defined %}
+    isis {
+        {% if configuration_protocols.isis.apply_groups is defined %}
+        apply-groups {{ configuration_protocols.isis.apply_groups }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# export policy                                                                       #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.isis.export is defined %}
+            {% if configuration_protocols.isis.export is not mapping and configuration_protocols.isis.export is not string %}
+        export [ {{ configuration_protocols.isis.export|join(' ') }} ];
+            {% else %}
+        export {{ configuration_protocols.isis.export }};
+            {% endif %}
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# interfaces                                                                          #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% for iface in configuration_protocols.isis.interface %}
+            {% if iface|length > 1 %}
+        interface {{ iface.name }} {
+                {% if iface.hello_padding_type is defined %}
+            hello-padding disable;
+                {% endif %}
+                {% if iface.point_to_point is defined %}
+            point-to-point;
+                {% endif %}
+                {% if iface.passive is defined %}
+            passive;
+                {% endif %}
+                {% if iface.disable is defined %}
+            disable;
+                {% endif %}
+        }
+            {% else %}
+        interface {{ iface.name }};
+            {% endif %}
+        {% endfor %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# level                                                                               #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.isis.level is defined %}
+            {% if configuration_protocols.isis.level is not mapping and configuration_protocols.isis.level is not string %}
+                {% for level in configuration_protocols.isis.level %}
+                    {% if level.disable is defined %}
+        level {{ level.name }} disable;
+                    {% else %}
+        level {{ level.name }} {
+                        {% if level.wide_metrics_only is defined %}
+            wide-metrics-only;
+                        {% endif %}
+                        {% if level.prefix_export_limit is defined %}
+            prefix-export-limit {{ level.prefix_export_limit }};
+                        {% endif %}
+                    {% endif %}
+        }
+                {% endfor %}
+            {% else %}
+                {% if configuration_protocols.isis.level.disable is defined %}
+        level {{ configuration_protocols.isis.level.name }} disable;
+                {% else %}
+        level {{ configuration_protocols.isis.level.name }} {
+                    {% if configuration_protocols.isis.level.wide_metrics_only is defined %}
+            wide-metrics-only;
+                    {% endif %}
+                    {% if configuration_protocols.isis.level.prefix_export_limit is defined %}
+            prefix-export-limit {{ configuration_protocols.isis.level.prefix_export_limit }};
+                    {% endif %}
+        }
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# reference-bandwidth                                                                 #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.isis.reference_bandwidth is defined %}
+        reference-bandwidth {{ configuration_protocols.isis.reference_bandwidth }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# lsp_lifetime                                                                        #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if configuration_protocols.isis.lsp_lifetime is defined %}
+        lsp-lifetime {{ configuration_protocols.isis.lsp_lifetime }};
+        {% endif %}
+    }
+    {% endif %}
+

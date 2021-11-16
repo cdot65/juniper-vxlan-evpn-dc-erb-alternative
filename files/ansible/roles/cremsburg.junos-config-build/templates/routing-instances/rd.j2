@@ -1,0 +1,6 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# vrf route distinguisher                                                             #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.route_distinguisher.rd_type is defined %}
+        route-distinguisher {{ each.route_distinguisher.rd_type }};
+        {% endif %}

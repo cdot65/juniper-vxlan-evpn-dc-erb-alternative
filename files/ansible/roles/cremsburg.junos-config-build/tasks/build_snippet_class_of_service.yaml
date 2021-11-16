@@ -1,0 +1,5 @@
+---
+- name: building configuration for stanza "class-of-services"
+  template:
+    src: "junos_class_of_service.j2"
+    dest: "{{ build_directory }}/140_class_of_service.part.conf"

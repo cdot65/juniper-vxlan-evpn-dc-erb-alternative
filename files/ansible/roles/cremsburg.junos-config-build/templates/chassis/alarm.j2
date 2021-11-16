@@ -1,0 +1,11 @@
+    {% if configuration_chassis.alarm is defined %}
+    alarm {
+        {% if configuration_chassis.alarm.management_ethernet is defined %}
+        management-ethernet {
+            {% if configuration_chassis.alarm.management_ethernet.link_down is defined %}
+            link-down ignore;
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}

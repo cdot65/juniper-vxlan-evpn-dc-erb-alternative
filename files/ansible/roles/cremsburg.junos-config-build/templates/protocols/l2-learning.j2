@@ -1,0 +1,11 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# l2-learning                                                                         #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.l2_learning is defined %}
+    l2-learning {
+        {% if configuration_protocols.l2_learning.global_mac_table_aging_time is defined %}
+        global-mac-table-aging-time {{ configuration_protocols.l2_learning.global_mac_table_aging_time }};
+        {% endif %}
+    }
+    {% endif %}
+

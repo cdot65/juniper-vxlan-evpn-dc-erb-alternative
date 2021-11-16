@@ -1,0 +1,26 @@
+    {# ----------------------------------------------------------------------------------- #}
+    {# rib                                                                                 #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_routing_options.rib is defined %}
+    rib {{ configuration_routing_options.rib.name }} {
+        {% if configuration_routing_options.rib.static.route is defined %}
+        static {
+            {% if configuration_routing_options.rib.static.route.discard is defined %}
+            route {{ configuration_routing_options.rib.static.route.name }} discard;
+            {% else %}
+            route {{ configuration_routing_options.rib.static.route.name }} {
+                {% if configuration_routing_options.rib.static.route.next_hop is defined %}
+                next-hop {{ configuration_routing_options.rib.static.route.next_hop }};
+                {% endif %}
+                {% if configuration_routing_options.rib.static.route.no_retain is defined %}
+                no-retain;
+                {% endif %}
+                {% if configuration_routing_options.rib.static.route.no_readvertise is defined %}
+                no-readvertise;
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endif %}
+    }
+    {% endif %}

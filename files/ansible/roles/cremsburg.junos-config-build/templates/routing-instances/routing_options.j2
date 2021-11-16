@@ -1,0 +1,42 @@
+        {#- ---------------------------------------------------------------------------------- #}
+        {# routing_options                                                             #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if each.routing_options is defined %}
+        routing-options {
+            {% if each.routing_options.static is defined %}
+                {% for each in each.routing_options.static.route %}
+                    {% for route in each.next_hop %}
+            static route {{ each.name }} next-hop {{ route }};
+                    {% endfor %}
+                {% endfor %}
+            {% endif %}
+            {% if each.routing_options.router_id is defined %}
+            router-id {{ each.routing_options.router_id }};
+            {% endif %}
+            {% if each.routing_options.multipath is defined %}
+            multipath;
+            {% endif %}
+            {% if each.routing_options.auto_export is defined %}
+                {% if each.routing_options.auto_export is mapping %}
+            auto-export {
+                    {% if each.routing_options.auto_export.family.inet is defined %}
+                family inet {
+                        {% if each.routing_options.auto_export.family.inet.unicast is defined %}
+                    unicast;
+                        {% endif %}
+                }
+                    {% endif %}
+            }
+                {% else %}
+            auto-export;
+                {% endif %}
+            {% endif %}
+            {% if each.routing_options.autonomous_system is defined %}
+                {% if each.routing_options.autonomous_system.loops is defined %}
+            autonomous-system {{ each.routing_options.autonomous_system.as_number }} loops {{ each.routing_options.autonomous_system.loops }};
+                {% else %}
+            autonomous-system {{ each.routing_options.autonomous_system.as_number }};
+                {% endif %}
+            {% endif %}
+        }
+        {% endif %}

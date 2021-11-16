@@ -1,0 +1,542 @@
+#jinja2: lstrip_blocks: "True (or False)", trim_blocks: "True (or False)"
+{#- ---------------------------------------------------------------------------------- #}
+{# Junos Configuration stanza for "firewall"                                           #}
+{# ---------------------------------------------------------------------------------- -#}
+{% if configuration_firewall is defined %}
+firewall {
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_firewall.family.inet                                                  #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_firewall.family.inet is defined %}
+    family inet {
+        {% if configuration_firewall.family.inet.filter is defined %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# multiple configuration_firewall.family.inet.filter                                  #}
+        {# ----------------------------------------------------------------------------------- #}
+        {% if configuration_firewall.family.inet.filter is not mapping and configuration_firewall.family.inet.filter is not string %}
+        {% for each in configuration_firewall.family.inet.filter %}
+        {% if each['@inactive'] is defined %}
+        inactive: filter {{ each.name }} {
+        {% else %}
+        filter {{ each.name }} {
+        {% endif %}
+            {% if each.interface_specific is defined %}
+            interface-specific;
+            {% endif %}
+            {% if each.term is defined %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# multiple configuration_firewall.family.inet.filter.term                             #}
+            {# ----------------------------------------------------------------------------------- #}
+            {% if each.term is not mapping and each.term is not string %}
+            {% for item in each.term %}
+            term {{ item.name}} {
+                {% if item.from is defined %}
+                from {
+                    {# --------------------------- #}
+                    {# from.fragment_offset_except #}
+                    {# --------------------------- #}
+                    {% if item.from.fragment_offset_except is defined %}
+                    fragment-offset-except {{ item.from.fragment_offset_except }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.packet-lenth           #}
+                    {# --------------------------- #}
+                    {% if item.from.packet_length is defined %}
+                    packet-length {{ item.from.packet_length }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.is-fragment            #}
+                    {# --------------------------- #}
+                    {% if item.from.is_fragment is defined %}
+                    is-fragment;
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.port                   #}
+                    {# --------------------------- #}
+                    {% if item.from.port is defined %}
+                    port {{ item.from.port }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.source_prefix_list     #}
+                    {# --------------------------- #}
+                    {% if item.from.source_prefix_list is defined %}
+                    {% if item.from.source_prefix_list is not mapping and item.from.source_prefix_list is not string %}
+                    source-prefix-list {
+                        {% for prefix in item.from.source_prefix_list %}
+                        {{ prefix.name }};
+                        {% endfor %}
+                    }
+                    {% else %}
+                    source-prefix-list {
+                        {{ prefix.name }};
+                    }
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.protocol               #}
+                    {# --------------------------- #}
+                    {% if item.from.protocol is defined %}
+                    {% if item.from.protocol is not mapping and item.from.protocol is not string %}
+                    protocol [ {{ item.from.protocol|join(' ')}} ];
+                    {% else %}
+                    protocol {{ item.from.protocol }};
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.icmp-type              #}
+                    {# --------------------------- #}
+                    {% if item.from.icmp_type is defined %}
+                    {% if item.from.icmp_type is not mapping and item.from.icmp_type is not string %}
+                    icmp-type [ {{ item.from.icmp_type|join(' ')}} ];
+                    {% else %}
+                    icmp-type {{ item.from.icmp_type }};
+                    {% endif %}
+                    {% endif %}
+                }
+                {% endif %}
+                {% if item.then is defined %}
+                then {
+                    count SMALL-PCKTS-IN;
+                    log;
+                    discard;
+                }
+                {% endif %}
+            }
+            {% endfor %}
+            {% else %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# single configuration_firewall.family.inet.filter.term                                      #}
+            {# ----------------------------------------------------------------------------------- #}
+            term {{ each.term.name}} {
+                {% if each.term.from is defined %}
+                from {
+                    {# --------------------------- #}
+                    {# from.source_prefix_list     #}
+                    {# --------------------------- #}
+                    {% if each.term.from.source_prefix_list is defined %}
+                    {% if each.term.from.source_prefix_list is not mapping and each.term.from.source_prefix_list is not string %}
+                    source-prefix-list {
+                        {% for prefix in each.term.from.source_prefix_list %}
+                        {{ prefix.name }};
+                        {% endfor %}
+                    }
+                    {% else %}
+                    source-prefix-list {
+                        {{ prefix.name }};
+                    }
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.fragment_offset_except #}
+                    {# --------------------------- #}
+                    {% if each.term.from.fragment_offset_except is defined %}
+                    fragment-offset-except {{ each.term.from.fragment_offset_except }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.packet-lenth           #}
+                    {# --------------------------- #}
+                    {% if each.term.from.packet_length is defined %}
+                    packet-length {{ each.term.from.packet_length }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.is-fragment            #}
+                    {# --------------------------- #}
+                    {% if each.term.from.is_fragment is defined %}
+                    is-fragment;
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.port                   #}
+                    {# --------------------------- #}
+                    {% if each.term.from.port is defined %}
+                    port {{ each.term.from.port }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.protocol               #}
+                    {# --------------------------- #}
+                    {% if each.term.from.protocol is defined %}
+                    {% if each.term.from.protocol is not mapping and each.term.from.protocol is not string %}
+                    protocol [ {{ each.term.from.protocol|join(' ')}} ];
+                    {% else %}
+                    protocol {{ each.term.from.protocol }};
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.icmp-type              #}
+                    {# --------------------------- #}
+                    {% if each.term.from.icmp_type is defined %}
+                    {% if each.term.from.icmp_type is not mapping and each.term.from.icmp_type is not string %}
+                    icmp-type [ {{ each.term.from.icmp_type|join(' ')}} ];
+                    {% else %}
+                    icmp-type {{ each.term.from.icmp_type }};
+                    {% endif %}
+                    {% endif %}
+                }
+                {% endif %}
+                {% if each.term.then is defined %}
+                then {
+                    count SMALL-PCKTS-IN;
+                    log;
+                    discard;
+                }
+                {% endif %}
+            }
+            {% endif %}
+            {% endif %}
+        }
+        {% endfor %}
+        {% else %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# single configuration_firewall.family.inet.filter                                           #}
+        {# ----------------------------------------------------------------------------------- #}
+        filter {{ configuration_firewall.family.inet.filter.name }} {
+            {% if configuration_firewall.family.inet.filter.interface_specific is defined %}
+            interface-specific;
+            {% endif %}
+            {% if configuration_firewall.family.inet.filter.term is defined %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# multiple configuration_firewall.family.inet.filter.term                                    #}
+            {# ----------------------------------------------------------------------------------- #}
+            {% if configuration_firewall.family.inet.filter.term is not mapping and configuration_firewall.family.inet.filter.term is not string %}
+            {% for item in configuration_firewall.family.inet.filter.term %}
+            {% if item['@inactive'] is defined %}
+            inactive: term {{ item.name }} {
+            {% else %}
+            term {{ item.name}} {
+            {% endif %}
+                {% if item.from is defined %}
+                from {
+                    {# --------------------------- #}
+                    {# from.source_prefix_list     #}
+                    {# --------------------------- #}
+                    {% if item.from.source_prefix_list is defined %}
+                    {% if item.from.source_prefix_list is not mapping and item.from.source_prefix_list is not string %}
+                    source-prefix-list {
+                        {% for prefix in item.from.source_prefix_list %}
+                        {{ prefix.name }};
+                        {% endfor %}
+                    }
+                    {% else %}
+                    source-prefix-list {
+                        {{ item.from.source_prefix_list.name }};
+                    }
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.fragment_offset_except #}
+                    {# --------------------------- #}
+                    {% if item.from.fragment_offset_except is defined %}
+                    fragment-offset-except {{ item.from.fragment_offset_except }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.packet-lenth           #}
+                    {# --------------------------- #}
+                    {% if item.from.packet_length is defined %}
+                    packet-length {{ item.from.packet_length }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.is-fragment            #}
+                    {# --------------------------- #}
+                    {% if item.from.is_fragment is defined %}
+                    is-fragment;
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.port                   #}
+                    {# --------------------------- #}
+                    {% if item.from.port is defined %}
+                    port {{ item.from.port }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.protocol               #}
+                    {# --------------------------- #}
+                    {% if item.from.protocol is defined %}
+                    {% if item.from.protocol is not mapping and item.from.protocol is not string %}
+                    protocol [ {{ item.from.protocol|join(' ')}} ];
+                    {% else %}
+                    protocol {{ item.from.protocol }};
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.icmp-type              #}
+                    {# --------------------------- #}
+                    {% if item.from.icmp_type is defined %}
+                    {% if item.from.icmp_type is not mapping and item.from.icmp_type is not string %}
+                    icmp-type [ {{ item.from.icmp_type|join(' ')}} ];
+                    {% else %}
+                    icmp-type {{ item.from.icmp_type }};
+                    {% endif %}
+                    {% endif %}
+                    {# -------------------------------- #}
+                    {# from.destination_prefix_list     #}
+                    {# -------------------------------- #}
+                    {% if item.from.destination_prefix_list is defined %}
+                    {% if item.from.destination_prefix_list is not mapping and item.from.destination_prefix_list is not string %}
+                    destination-prefix-list {
+                        {% for prefix in item.from.destination_prefix_list %}
+                        {{ prefix.name }};
+                        {% endfor %}
+                    }
+                    {% else %}
+                    destination-prefix-list {
+                        {{ item.from.destination_prefix_list.name }};
+                    }
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.source_port            #}
+                    {# --------------------------- #}
+                    {% if item.from.source_port is defined %}
+                    source-port {{ item.from.source_port }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.ttl                    #}
+                    {# --------------------------- #}
+                    {% if item.from.ttl is defined %}
+                    ttl {{ item.from.ttl }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.destination_port       #}
+                    {# --------------------------- #}
+                    {% if item.from.destination_port is defined %}
+                    {% if item.from.destination_port is not mapping and item.from.destination_port is not string %}
+                    destination-port [ {{ item.from.destination_port|join(' ') }} ];
+                    {% else %}
+                    destination-port {{ item.from.destination_port }};
+                    {% endif %}
+                    {% endif %}
+                }
+                {% endif %}
+                {% if item.then is defined %}
+                then {
+                    {% if item.then.policer is defined %}
+                    policer {{ item.then.policer }};
+                    {% endif %}
+                    {% if item.then.count is defined %}
+                    count {{ item.then.count }};
+                    {% endif %}
+                    {% if item.then.log is defined %}
+                    log;
+                    {% endif %}
+                    {% if item.then.discard is defined %}
+                    discard;
+                    {% endif %}
+                    {% if item.then.accept is defined %}
+                    accept;
+                    {% endif %}
+                    {% if item.then.reject is defined %}
+                    reject;
+                    {% endif %}
+                }
+                {% endif %}
+            }
+            {% endfor %}
+            {% else %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# single configuration_firewall.family.inet.filter.term                                      #}
+            {# ----------------------------------------------------------------------------------- #}
+            term {{ configuration_firewall.family.inet.filter.term.name}} {
+                {% if configuration_firewall.family.inet.filter.term.from is defined %}
+                from {
+                    {# --------------------------- #}
+                    {# from.source_prefix_list     #}
+                    {# --------------------------- #}
+                    {% if configuration_firewall.family.inet.filter.term.from.source_prefix_list is defined %}
+                    {% if configuration_firewall.family.inet.filter.term.from.source_prefix_list is not mapping and configuration_firewall.family.inet.filter.term.from.source_prefix_list is not string %}
+                    source-prefix-list {
+                        {% for prefix in configuration_firewall.family.inet.filter.term.from.source_prefix_list %}
+                        {{ prefix.name }};
+                        {% endfor %}
+                    }
+                    {% else %}
+                    source-prefix-list {
+                        {{ name }};
+                    }
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# fragment_offset_except      #}
+                    {# --------------------------- #}
+                    {% if configuration_firewall.family.inet.filter.term.from.fragment_offset_except is defined %}
+                    fragment-offset-except {{ configuration_firewall.family.inet.filter.term.from.fragment_offset_except }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# packet-lenth                #}
+                    {# --------------------------- #}
+                    {% if configuration_firewall.family.inet.filter.term.from.packet_length is defined %}
+                    packet-length {{ configuration_firewall.family.inet.filter.term.from.packet_length }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# is-fragment                 #}
+                    {# --------------------------- #}
+                    {% if configuration_firewall.family.inet.filter.term.from.is_fragment is defined %}
+                    is-fragment;
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# port                        #}
+                    {# --------------------------- #}
+                    {% if configuration_firewall.family.inet.filter.term.from.port is defined %}
+                    port {{ configuration_firewall.family.inet.filter.term.from.port }};
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# protocol                    #}
+                    {# --------------------------- #}
+                    {% if configuration_firewall.family.inet.filter.term.from.protocol is defined %}
+                    {% if configuration_firewall.family.inet.filter.term.from.protocol is not mapping and configuration_firewall.family.inet.filter.term.from.protocol is not string %}
+                    protocol [ {{ configuration_firewall.family.inet.filter.term.from.protocol|join(' ')}} ];
+                    {% else %}
+                    protocol {{ configuration_firewall.family.inet.filter.term.from.protocol }};
+                    {% endif %}
+                    {% endif %}
+                    {# --------------------------- #}
+                    {# from.icmp-type              #}
+                    {# --------------------------- #}
+                    {% if configuration_firewall.family.inet.filter.term.from.icmp_type is defined %}
+                    {% if configuration_firewall.family.inet.filter.term.from.icmp_type is not mapping and configuration_firewall.family.inet.filter.term.from.icmp_type is not string %}
+                    icmp-type [ {{ configuration_firewall.family.inet.filter.term.from.icmp_type|join(' ')}} ];
+                    {% else %}
+                    icmp-type {{ configuration_firewall.family.inet.filter.term.from.icmp_type }};
+                    {% endif %}
+                    {% endif %}
+                }
+                {% endif %}
+                {% if configuration_firewall.family.inet.filter.term.then is defined %}
+                then {
+                    count SMALL-PCKTS-IN;
+                    log;
+                    discard;
+                }
+                {% endif %}
+            }
+            {% endif %}
+            {% endif %}
+        }
+        {% endif %}
+        {% endif %}
+    }
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_firewall.family.ethernet_switching                                    #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_firewall.family.ethernet_switching is defined %}
+    family ethernet-switching {
+        {% if configuration_firewall.family.ethernet_switching.filter is defined %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# multiple configuration_firewall.family.ethernet_switching.filter                    #}
+        {# ----------------------------------------------------------------------------------- #}
+        {% if configuration_firewall.family.ethernet_switching.filter is not mapping and configuration_firewall.family.ethernet_switching.filter is not string %}
+        {% for each in configuration_firewall.family.ethernet_switching.filter %}
+        filter {{ each.name }} {
+            {# ----------------------------------------------------------------------------------- #}
+            {# multiple terms                                                                      #}
+            {# ----------------------------------------------------------------------------------- #}
+            {% if each.term is not mapping and each.term is not string %}
+            {% for item in each.term %}
+            term {{ item.name }} {
+                from {
+                    {% if item.from.ether_type is defined %}
+                    ether-type [ {{ item.from.ether_type|join(' ') }} ];
+                    {% elif item.from.ip_protocol %}
+                    ip-protocol [ {{ item.from.ip_protocol|join(' ') }} ];
+                    {% endif %}
+                }
+                {% if item.then.discard is defined %}
+                then discard;
+                {% elif item.then.accept is defined %}
+                then accept;
+                {% endif %}
+            }
+            {% endfor %}
+            {# ----------------------------------------------------------------------------------- #}
+            {# single term                                                                         #}
+            {# ----------------------------------------------------------------------------------- #}
+            {% else %}
+            term {{ each.term.name }} {
+                from {
+                    {% if each.term.from.ether_type is defined %}
+                    ether-type [ {{ item.from.ether_type|join(' ') }} ];
+                    {% elif each.term.from.ip_protocol %}
+                    ip-protocol [ {{ item.from.ip_protocol|join(' ') }} ];
+                    {% endif %}
+                }
+                {% if each.term.then.discard is defined %}
+                then discard;
+                {% elif each.term.then.accept is defined %}
+                then accept;
+                {% endif %}
+            }
+            {% endif %}
+        }
+        {% endfor %}
+        {% else %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# single configuration_firewall.family.inet.filter                                    #}
+        {# ----------------------------------------------------------------------------------- #}
+        filter {{ configuration_firewall.family.ethernet_switching.filter.name }} {
+            term {{ configuration_firewall.family.ethernet_switching.filter.term.name }} {
+                from {
+                    ether-type [ {{ configuration_firewall.family.ethernet_switching.filter.term.from.ether_type|join(' ') }} ];
+                    ip-protocol [ {{ configuration_firewall.family.ethernet_switching.filter.term.from.ip_protocol|join(' ') }} ];
+                }
+                {% if configuration_firewall.family.ethernet_switching.filter.term.then is defined %}
+                {% if configuration_firewall.family.ethernet_switching.filter.term.then.discard is defined %}
+                then discard;
+                {% endif %}
+                {% if configuration_firewall.family.ethernet_switching.filter.term.then.accept is defined %}
+                then accept;
+                {% endif %}
+                {% endif %}
+            }
+        }
+        {% endif %}
+        {% endif %}
+    }
+    {% endif %}
+    {# ----------------------------------------------------------------------------------- #}
+    {# configuration_firewall.policer                                                      #}
+    {# ----------------------------------------------------------------------------------- #}
+    {% if configuration_firewall.policer is defined %}
+    {% if configuration_firewall.policer is not mapping and configuration_firewall.policer is not string %}
+    {% for each in configuration_firewall.policer %}
+    policer {{ each.name }} {
+        {% if each.if_exceeding is defined %}
+        if-exceeding {
+            {% if each.if_exceeding.bandwidth_limit is defined %}
+            bandwidth-limit {{ each.if_exceeding.bandwidth_limit }};
+            {% endif %}
+            {% if each.if_exceeding.burst_size_limit is defined %}
+            burst-size-limit {{ each.if_exceeding.burst_size_limit }};
+            {% endif %}
+        }
+        {% endif %}
+        {% if each.then is defined %}
+        {% if each.then.discard is defined %}
+        then discard;
+        {% elif each.then.accept is defined %}
+        then accept;
+        {% endif %}
+        {% endif %}
+    }
+    {% endfor %}
+    {% else %}
+    policer {{ configuration_firewall.policer.name }} {
+        {% if configuration_firewall.policer.if_exceeding is defined %}
+        if-exceeding {
+            {% if configuration_firewall.policer.if_exceeding.bandwidth_limit is defined %}
+            bandwidth-limit {{ configuration_firewall.policer.if_exceeding.bandwidth_limit }};
+            {% endif %}
+            {% if configuration_firewall.policer.if_exceeding.burst_size_limit is defined %}
+            burst-size-limit {{ configuration_firewall.policer.if_exceeding.burst_size_limit }};
+            {% endif %}
+        }
+        {% endif %}
+        {% if configuration_firewall.policer.then is defined %}
+        {% if configuration_firewall.policer.then.discard is defined %}
+        then discard;
+        {% elif configuration_firewall.policer.then.accept is defined %}
+        then accept;
+        {% endif %}
+        {% endif %}
+    }
+    {% endif %}
+    {% endif %}
+}
+{% endif %}

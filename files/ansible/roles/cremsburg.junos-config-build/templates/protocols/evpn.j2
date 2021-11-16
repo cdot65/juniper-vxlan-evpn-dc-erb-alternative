@@ -1,0 +1,63 @@
+
+    {# ----------------------------------------------------------------------------------- #}
+    {# evpn                                                                                #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.evpn is defined %}
+        {% if configuration_protocols.evpn['@inactive'] is defined %}
+    inactive: evpn {
+        {% else %}
+    evpn {
+        {% endif %}
+
+        {% set evpn = configuration_protocols.evpn %}
+        {# ----------------------------------------------------------------------------------- #}
+        {# vni-options                                                                         #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if evpn.vni_options is defined %}
+        vni-options {
+            {% for each in evpn.vni_options %}
+            vni {{ each.name }} {
+                vrf-target {{ each.vrf_target }};
+            }
+            {% endfor %}
+        } 
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# encapsulation                                                                       #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if evpn.encapsulation is defined %}
+        encapsulation {{ evpn.encapsulation }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# default-gateway                                                                     #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if evpn.default_gateway is defined %}
+        default-gateway {{ evpn.default_gateway }};
+        {% endif %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# extended_vni_list                                                                   #}
+        {# ---------------------------------------------------------------------------------- -#}
+        {% if evpn.extended_vni_list is defined %}
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# create a shortcut object for the list of vnis                                       #}
+        {# check to see if the extended vni list is a list                                     #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% set vni_list = configuration_protocols.evpn.extended_vni_list %}
+            {% if vni_list is not mapping and vni_list is not string %}
+        extended-vni-list [ {{ vni_list|join(' ') }} ];
+
+        {# ----------------------------------------------------------------------------------- #}
+        {# match everything that is not a list                                                 #}
+        {# ---------------------------------------------------------------------------------- -#}
+            {% else %}
+        extended-vni-list {{ vni_list }};
+            {% endif %}
+        {% endif %}
+
+    }
+    {% endif %}
+

@@ -1,0 +1,28 @@
+---
+### -------------------------------------------------
+### DIRECTORIES TO BE USED IN JUNIPER_STANZA ROLES
+### -------------------------------------------------
+# directories to hold configuration files as they're generated
+temporary_directory: "./config/temporary/"
+build_directory: "{{ temporary_directory }}/{{ inventory_hostname }}"
+
+### -------------------------------------------------
+### COMPLETED CONFIGS
+### -------------------------------------------------
+
+configuration_directory: "./config/complete/"
+completed_config_file: "{{ configuration_directory }}/{{ inventory_hostname }}.conf"
+
+### -------------------------------------------------
+### BOOTSTRAP CONFIGS
+### -------------------------------------------------
+
+bootstrap_config_dir: "./config/bootstrap"
+bootstrap_config_file: "{{ bootstrap_config_dir }}/{{ inventory_hostname }}.conf"
+
+### -------------------------------------------------
+### DIFF COMMITTED VS GENERATED CONFIGS
+### -------------------------------------------------
+
+committed_config_dir: "./config/committed"
+committed_config_file: "{{ committed_config_dir }}/{{ inventory_hostname }}.conf"

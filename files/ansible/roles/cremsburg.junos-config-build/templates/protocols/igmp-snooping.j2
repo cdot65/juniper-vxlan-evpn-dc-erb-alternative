@@ -1,0 +1,17 @@
+
+    {# ----------------------------------------------------------------------------------- #}
+    {# igmp-snooping                                                                       #}
+    {# ---------------------------------------------------------------------------------- -#}
+    {% if configuration_protocols.igmp_snooping is defined %}
+    igmp-snooping {
+        {% if configuration_protocols.igmp_snooping.vlan is defined %}
+            {% if configuration_protocols.igmp_snooping.vlan is not mapping and configuration_protocols.igmp_snooping.vlan is not string %}
+                {% for each in configuration_protocols.igmp_snooping.vlan %}
+        vlan {{ each.name }};
+                {% endfor %}
+            {% else %}
+        vlan {{ configuration_protocols.igmp_snooping.vlan.name }};
+            {% endif %}
+        {% endif %}
+    }
+    {% endif %}
